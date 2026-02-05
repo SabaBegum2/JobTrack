@@ -48,4 +48,17 @@ JobTrack is deployed on Amazon Web Services (AWS).
 The frontend is served to users through the EC2 instance, which communicates with the backend REST API. 
 The backend securely connects to the MySQL database hosted on AWS RDS.
 
+---
+
+## Installing Dependencies
+
+### Option 1: Install Dependencies Using `npm install`
+Use this option if the backend folder already contains a `package.json` file.
+
+```bash
+cd backend
+npm install
+npm start
+
+
 
