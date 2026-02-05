@@ -29,13 +29,23 @@ JobTrack uses a **three-tier architecture**:
 
 ## Tech Stack
 
-- **Frontend:** HTML, CSS, JavaScript  
-- **Backend:** Node.js (Express.js REST API)  
-- **Database:** MySQL  
-- **Deployment/Hosting:** AWS EC2, AWS RDS (MySQL), AWS S3 (optional for static files/uploads)  
-- **Version Control:** Git / GitHub  
+- Frontend: HTML, CSS, JavaScript  
+- Backend: Node.js (Express.js REST API)  
+- Database: AWS RDS (MySQL)  
+- Deployment and Hosting: AWS EC2  
+- Version Control: Git / GitHub  
 
 ---
 
-## Project Structure (Example)
+## Deployment and Hosting
+
+JobTrack is deployed on Amazon Web Services (AWS).
+
+- **Application Server:** AWS EC2  
+- **Database:** AWS RDS (MySQL)  
+- **Storage (optional):** AWS S3  
+
+The frontend is served to users through the EC2 instance, which communicates with the backend REST API. 
+The backend securely connects to the MySQL database hosted on AWS RDS.
+
 
