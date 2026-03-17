@@ -88,7 +88,7 @@ Contact the project owner to get the credentials before following the steps belo
 - [MySQL Workbench](https://dev.mysql.com/downloads/workbench/) installed
 - Database credentials from the project owner (host, username, password)
 
-### Step 1 — Connect in MySQL Workbench
+### Step 1 - Connect in MySQL Workbench
 1. Open MySQL Workbench
 2. Click the **+** icon next to "MySQL Connections"
 3. Fill in the following:
@@ -100,7 +100,7 @@ Contact the project owner to get the credentials before following the steps belo
 4. Click **Test Connection** — you should see a success message
 5. Click **OK** to save, then double-click the connection to open it
 
-### Step 2 — Configure Your `.env` File
+### Step 2 - Configure Your `.env` File
 Create a `.env` file in the `backend` folder with the credentials provided:
 ```env
 DB_HOST= provided by the project owner
