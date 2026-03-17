@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JobTrack - Register</title>
+  <link rel="stylesheet" href="Styles.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="left">
+      <div class="logo">
+        <div class="logo-icon">💼</div>
+        <h1>JobTrack</h1>
+      </div>
+
+      <div class="tagline">Create your JobTrack account and start tracking applications.</div>
+
+      <div class="description">
+        JobTrack helps users organize and manage job and internship applications in one place.
+        After registering, users can log in securely, add applications, update statuses, and
+        keep track of their job search from any device.
+      </div>
+
+      <div class="section-title">Why Register?</div>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <strong>Secure Account</strong>
+          Create a personal account to keep your job data safe.
+        </div>
+        <div class="feature-card">
+          <strong>Track Applications</strong>
+          Save jobs and monitor progress in one dashboard.
+        </div>
+        <div class="feature-card">
+          <strong>Stay Organized</strong>
+          Keep company names, job titles, and statuses together.
+        </div>
+        <div class="feature-card">
+          <strong>Easy Access</strong>
+          Access your applications anytime from your device.
+        </div>
+      </div>
+
+      <div class="section-title">Tech Stack</div>
+      <div class="tech-stack">
+        <div class="tech-badge">HTML</div>
+        <div class="tech-badge">CSS</div>
+        <div class="tech-badge">JavaScript</div>
+        <div class="tech-badge">Node.js</div>
+        <div class="tech-badge">Express.js</div>
+        <div class="tech-badge">MySQL</div>
+        <div class="tech-badge">AWS EC2</div>
+        <div class="tech-badge">AWS RDS</div>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="login-card">
+        <h2>Create Account</h2>
+        <p>Register to start using your JobTrack account.</p>
+
+        <form id="registerForm">
+          <div class="form-group">
+            <label for="fullName">Full Name</label>
+            <input type="text" id="fullName" placeholder="Enter your full name" required />
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" placeholder="Enter your email" required />
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Create a password" required />
+          </div>
+
+          <div class="form-group">
+            <label for="confirmPassword">Confirm Password</label>
+            <input
+              type="password"
+              id="confirmPassword"
+              placeholder="Confirm your password"
+              required
+            />
+          </div>
+
+          <button type="submit" class="btn">Register</button>
+        </form>
+
+        <div id="message" class="message"></div>
+
+        <div class="bottom-text">
+          Already have an account? <a href="Index.html">Login</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const registerForm = document.getElementById("registerForm");
+    const message = document.getElementById("message");
+
+    registerForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const fullName = document.getElementById("fullName").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const confirmPassword = document.getElementById("confirmPassword").value.trim();
+
+      if (!fullName || !email || !password || !confirmPassword) {
+        message.textContent = "Please fill in all fields.";
+        message.className = "message error";
+        return;
+      }
+
+      if (password.length < 6) {
+        message.textContent = "Password must be at least 6 characters.";
+        message.className = "message error";
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        message.textContent = "Passwords do not match.";
+        message.className = "message error";
+        return;
+      }
+
+      message.textContent = "Registration successful! You can now log in.";
+      message.className = "message success";
+
+      registerForm.reset();
+
+      setTimeout(() => {
+        window.location.href = "Index.html";
+      }, 1500);
+    });
+  </script>
+</body>
+</html>
