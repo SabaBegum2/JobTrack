@@ -98,23 +98,46 @@
   </div>
 
   <script>
-    const loginForm = document.getElementById("loginForm");
-    const message = document.getElementById("message");
+  const loginForm = document.getElementById("loginForm");
+  const message = document.getElementById("message");
 
-    loginForm.addEventListener("submit", function (e) {
-      e.preventDefault();
+  loginForm.addEventListener("submit", async function (e) {
+  e.preventDefault();
 
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
 
-      if (email === "demo@jobtrack.com" && password === "demo123") {
-        message.textContent = "Login successful!";
-        message.className = "message success";
-      } else {
-        message.textContent = "Invalid email or password.";
-        message.className = "message error";
-      }
+  if (!email || !password) {
+    message.textContent = "Please fill in all fields.";
+    message.className = "message error";
+    return;
+  }
+
+  try {
+    const response = await fetch("http://localhost:3000/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
     });
-  </script>
+
+    const data = await response.json();
+
+    if (response.ok) {
+      localStorage.setItem('user', JSON.stringify(data.user)); // ← saves user info
+      message.textContent = "Login successful! Redirecting...";
+      message.className = "message success";
+      setTimeout(() => {
+        window.location.href = "Applications.html";
+      }, 1500);
+    } else {
+      message.textContent = data.message || "Invalid email or password.";
+      message.className = "message error";
+    }
+  } catch (err) {
+    message.textContent = "Could not connect to server. Try again.";
+    message.className = "message error";
+  }
+});
+</script>
 </body>
 </html>

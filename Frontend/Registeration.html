@@ -100,43 +100,57 @@
 
   <script>
     const registerForm = document.getElementById("registerForm");
-    const message = document.getElementById("message");
+const message = document.getElementById("message");
 
-    registerForm.addEventListener("submit", function (e) {
-      e.preventDefault();
+registerForm.addEventListener("submit", async function (e) {
+  e.preventDefault();
 
-      const fullName = document.getElementById("fullName").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
-      const confirmPassword = document.getElementById("confirmPassword").value.trim();
+  const fullName = document.getElementById("fullName").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const confirmPassword = document.getElementById("confirmPassword").value.trim();
 
-      if (!fullName || !email || !password || !confirmPassword) {
-        message.textContent = "Please fill in all fields.";
-        message.className = "message error";
-        return;
-      }
+  if (!fullName || !email || !password || !confirmPassword) {
+    message.textContent = "Please fill in all fields.";
+    message.className = "message error";
+    return;
+  }
 
-      if (password.length < 6) {
-        message.textContent = "Password must be at least 6 characters.";
-        message.className = "message error";
-        return;
-      }
+  if (password.length < 6) {
+    message.textContent = "Password must be at least 6 characters.";
+    message.className = "message error";
+    return;
+  }
 
-      if (password !== confirmPassword) {
-        message.textContent = "Passwords do not match.";
-        message.className = "message error";
-        return;
-      }
+  if (password !== confirmPassword) {
+    message.textContent = "Passwords do not match.";
+    message.className = "message error";
+    return;
+  }
 
-      message.textContent = "Registration successful! You can now log in.";
-      message.className = "message success";
-
-      registerForm.reset();
-
-      setTimeout(() => {
-        window.location.href = "Index.html";
-      }, 1500);
+  try {
+    const response = await fetch("http://localhost:3000/api/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fullName, email, password }),
     });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      message.textContent = "Registration successful! Redirecting to login...";
+      message.className = "message success";
+      registerForm.reset();
+      setTimeout(() => { window.location.href = "Index.html"; }, 1500);
+    } else {
+      message.textContent = data.error || "Registration failed.";
+      message.className = "message error";
+    }
+  } catch (err) {
+    message.textContent = "Could not connect to server. Try again.";
+    message.className = "message error";
+  }
+});
   </script>
 </body>
 </html>
