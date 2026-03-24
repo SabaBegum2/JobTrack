@@ -5,28 +5,39 @@ const db = require('./db');
 require('dotenv').config();
 
 const app = express();
-app.use(cors());
+//app.use(cors());
+app.use(cors({
+  origin: 'http://127.0.0.1:5500'
+}));
 app.use(express.json());
 
 // Routes
-const jobsRouter = require('./routes/jobs');
-app.use('/api', jobsRouter);
+//const jobsRouter = require('./routes/jobs');
+//app.use('/api', jobsRouter);
 
-// REGISTER - updated for promise pool
-app.post('/api/register', async (req, res) => {
-  const { full_name, email, password } = req.body;
-  if (!full_name || !email || !password) {
-    return res.status(400).json({ message: 'All fields are required' });
+// Register route
+app.post("/api/register", async (req, res) => {
+  const { fullName, email, password } = req.body;
+
+  if (!fullName || !email || !password) {
+    return res.status(400).json({ error: "All fields are required." });
   }
+
   try {
-    const sql = 'INSERT INTO users (full_name, email, password) VALUES (?, ?, ?)';
-    await db.query(sql, [full_name, email, password]);
-    res.status(201).json({ message: 'User registered successfully' });
-  } catch (err) {
-    if (err.code === 'ER_DUP_ENTRY') {
-      return res.status(400).json({ message: 'Email already exists' });
+    const [existing] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
+
+    if (existing.length > 0) {
+      return res.status(409).json({ error: "Email already registered." });
     }
-    res.status(500).json({ message: 'Server error' });
+
+    await db.query(
+      "INSERT INTO users (full_name, email, password) VALUES (?, ?, ?)",
+      [fullName, email, password]
+    );
+
+    res.status(201).json({ message: "User registered successfully." });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to register user." });
   }
 });
 
@@ -37,8 +48,10 @@ app.post('/api/login', async (req, res) => {
     return res.status(400).json({ message: 'All fields are required' });
   }
   try {
-    const sql = 'SELECT * FROM users WHERE email = ? AND password = ?';
-    const [results] = await db.query(sql, [email, password]);
+    const [results] = await db.query(
+      'SELECT * FROM users WHERE email = ? AND password = ?',
+      [email, password]
+    );
     if (results.length === 0) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
@@ -105,6 +118,101 @@ app.post('/api/reset-password', (req, res) => {
     });
   });
 });
+
+// GET JOBS FOR USER
+app.get('/api/jobs/:userId', async (req, res) => {
+  try {
+    const [jobs] = await db.query(
+      'SELECT * FROM jobs WHERE user_id = ? ORDER BY date DESC',
+      [req.params.userId]
+    );
+    res.json(jobs);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// ADD A JOB
+app.post('/api/jobs', async (req, res) => {
+  const { userId, company, title, date, status, notes } = req.body;
+  if (!userId || !company || !title || !date) {
+    return res.status(400).json({ message: 'All fields are required.' });
+  }
+  try {
+    await db.query(
+      'INSERT INTO jobs (user_id, company, title, date, status, notes) VALUES (?, ?, ?, ?, ?, ?)',
+      [userId, company, title, date, status, notes]
+    );
+    res.status(201).json({ message: 'Job added successfully.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+//DELETE A JOB
+app.delete('/api/jobs/:id', async (req, res) => {
+  try {
+    await db.query('DELETE FROM jobs WHERE id = ?', [req.params.id]);
+    res.json({ message: 'Job deleted' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// UPDATE A JOB
+app.put('/api/jobs/:id', async (req, res) => {
+  const { company, title, date, status, notes } = req.body;
+  try {
+    await db.query(
+      'UPDATE jobs SET company = ?, title = ?, date = ?, status = ?, notes = ? WHERE id = ?',
+      [company, title, date, status, notes, req.params.id]
+    );
+    res.json({ message: 'Job updated successfully.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// GET /api/calendar/events
+app.get('/api/calendar/events', async (req, res) => {
+  const { user_id } = req.query;
+  try {
+    const [rows] = await db.query(
+      `SELECT id, title, DATE_FORMAT(date, '%Y-%m-%d') AS date, 
+              TIME_FORMAT(time, '%H:%i') AS time, type
+       FROM calendar_events
+       WHERE user_id = ?
+       ORDER BY date ASC`,
+      [user_id]
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error('DB error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/calendar/events
+app.post('/api/calendar/events', async (req, res) => {
+  const { user_id, title, date, time, type } = req.body;
+  console.log('Received body:', req.body); // ← keep this for now to debug
+  try {
+    const [result] = await db.query(
+      `INSERT INTO calendar_events (user_id, title, date, time, type) 
+       VALUES (?, ?, ?, ?, ?)`,
+      [user_id, title, date, time || null, type]
+    );
+    res.json({ id: result.insertId, title, date, time, type });
+  } catch (err) {
+    console.error('DB error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
