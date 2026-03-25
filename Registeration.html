@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>JobTrack - Register</title>
+  <link rel="stylesheet" href="Styles.css"/>
+</head>
+<body>
+  <div class="container">
+
+    <div class="left">
+      <div class="logo">
+        <img src="./JobTrackLogo.png" alt="JobTrack Logo" class="logo-img">
+        <h1>JobTrack</h1>
+      </div>
+
+      <div class="tagline">
+        Track your job and internship applications in one place.
+      </div>
+
+      <div class="description">
+        JobTrack is a cloud-hosted web application that helps users organize, track,
+        and manage job and internship applications from any device. Users can
+        securely create an account, add applications, update statuses, and manage
+        records all in one centralized platform.
+      </div>
+
+      <div class="section-title">Key Features</div>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <strong>User Authentication</strong>
+          Register, log in, log out, and reset passwords securely.
+        </div>
+
+        <div class="feature-card">
+          <strong>Application Management</strong>
+          Create, view, edit, and delete saved job applications.
+        </div>
+
+        <div class="feature-card">
+          <strong>Status Tracking</strong>
+          Update progress from Interested to Applied, Interviewing, Offer, or Rejected.
+        </div>
+
+        <div class="feature-card">
+          <strong>Search &amp; Filter</strong>
+          Quickly find applications by company, role, or status.
+        </div>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="login-card">
+        <h2>Create Account</h2>
+        <p>Register to start using your JobTrack account.</p>
+
+        <form id="registerForm">
+          <div class="form-group">
+            <label for="fullName">Full Name</label>
+            <input type="text" id="fullName" placeholder="Enter your full name" required />
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" placeholder="Enter your email" required />
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Create a password" required />
+          </div>
+
+          <div class="form-group">
+            <label for="confirmPassword">Confirm Password</label>
+            <input type="password" id="confirmPassword" placeholder="Confirm your password" required />
+          </div>
+
+          <button type="submit" class="btn">Register</button>
+        </form>
+
+        <div id="message" class="message"></div>
+
+        <div class="bottom-text">
+          Already have an account? <a href="Index.html">Login</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const registerForm = document.getElementById("registerForm");
+    const message = document.getElementById("message");
+
+    registerForm.addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      const fullName = document.getElementById("fullName").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const confirmPassword = document.getElementById("confirmPassword").value.trim();
+
+      if (!fullName || !email || !password || !confirmPassword) {
+        message.textContent = "Please fill in all fields.";
+        message.className = "message error";
+        return;
+      }
+
+      if (password.length < 6) {
+        message.textContent = "Password must be at least 6 characters.";
+        message.className = "message error";
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        message.textContent = "Passwords do not match.";
+        message.className = "message error";
+        return;
+      }
+
+      try {
+        const response = await fetch("http://localhost:3000/api/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ fullName, email, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          message.textContent = "Registration successful! Redirecting...";
+          message.className = "message success";
+
+          setTimeout(() => {
+            window.location.href = "Index.html";
+          }, 1500);
+        } else {
+          message.textContent = data.message || "Registration failed.";
+          message.className = "message error";
+        }
+      } catch (error) {
+        message.textContent = "Server error. Try again later.";
+        message.className = "message error";
+      }
+    });
+  </script>
+</body>
+</html>
