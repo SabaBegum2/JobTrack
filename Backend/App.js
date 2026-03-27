@@ -10,10 +10,7 @@ app.use(cors({
   origin: 'http://127.0.0.1:5500'
 }));
 app.use(express.json());
-
-// Routes
-//const jobsRouter = require('./routes/jobs');
-//app.use('/api', jobsRouter);
+ 
 
 // Register route
 app.post("/api/register", async (req, res) => {
@@ -212,6 +209,100 @@ app.post('/api/calendar/events', async (req, res) => {
   }
 });
 
+// UPDATE a calendar event
+app.put('/api/calendar/events/:id', async (req, res) => {
+  const { title, date, time, type } = req.body;
+  try {
+    await db.query(
+      `UPDATE calendar_events SET title = ?, date = ?, time = ?, type = ? WHERE id = ?`,
+      [title, date, time || null, type, req.params.id]
+    );
+    res.json({ message: 'Event updated' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// DELETE a calendar event
+app.delete('/api/calendar/events/:id', async (req, res) => {
+  try {
+    await db.query(`DELETE FROM calendar_events WHERE id = ?`, [req.params.id]);
+    res.json({ message: 'Event deleted' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// DASHBOARD
+app.get('/api/dashboard', async (req, res) => {
+  try {
+    const userId = req.query.userId; // gets userId from URL: /api/dashboard?userId=1
+
+    // Get counts grouped by status
+    const [rows] = await db.query(
+      `SELECT status, COUNT(*) as count 
+       FROM jobs 
+       WHERE user_id = ? 
+       GROUP BY status`,
+      [userId]
+    );
+
+    // Build stats object
+    const stats = { total: 0, applied: 0, interviewing: 0, offers: 0 };
+    rows.forEach(row => {
+      const s = row.status.toLowerCase();
+      stats.total += Number(row.count);
+      if (s === 'applied')      stats.applied      += Number(row.count);
+      if (s === 'interviewing') stats.interviewing += Number(row.count);
+      if (s === 'offer')        stats.offers       += Number(row.count);
+    });
+
+    // Calculate percentages for progress bars
+    const progress = {
+      applied:      stats.total ? Math.round((stats.applied      / stats.total) * 100) : 0,
+      interviewing: stats.total ? Math.round((stats.interviewing / stats.total) * 100) : 0,
+      offers:       stats.total ? Math.round((stats.offers       / stats.total) * 100) : 0,
+    };
+
+    // Get 5 most recent jobs
+    const [recent] = await db.query(
+      `SELECT company, title, date, status 
+       FROM jobs 
+       WHERE user_id = ? 
+       ORDER BY date DESC 
+       LIMIT 5`,
+      [userId]
+    );
+
+    res.json({ stats, progress, recent });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to load dashboard data' });
+  }
+});
+
+// UPDATE user profile
+app.put('/api/users/:id', async (req, res) => {
+  const { full_name, email } = req.body;
+  try {
+    await db.query('UPDATE users SET full_name = ?, email = ? WHERE id = ?', [full_name, email, req.params.id]);
+    res.json({ message: 'Profile updated' });
+  } catch (err) { res.status(500).json({ message: 'Server error' }); }
+});
+
+// UPDATE password
+app.put('/api/users/:id/password', async (req, res) => {
+  const { current_password, new_password } = req.body;
+  try {
+    const [rows] = await db.query('SELECT * FROM users WHERE id = ? AND password = ?', [req.params.id, current_password]);
+    if (rows.length === 0) return res.status(401).json({ message: 'Current password is incorrect' });
+    await db.query('UPDATE users SET password = ? WHERE id = ?', [new_password, req.params.id]);
+    res.json({ message: 'Password updated' });
+  } catch (err) { res.status(500).json({ message: 'Server error' }); }
+});
 
 
 const PORT = process.env.PORT || 3000;

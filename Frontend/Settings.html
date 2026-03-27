@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JobTrack - Settings</title>
+  <link rel="stylesheet" href="Styles.css" />
+  <style>
+    /* ── THEME VARIABLES ── */
+    :root {
+      --bg:          #f4f7fb;
+      --card:        #ffffff;
+      --border:      #e2e8f0;
+      --text-main:   #1a2340;
+      --text-sub:    #667085;
+      --input-bg:    #f8fafc;
+      --input-border:#dbe3ee;
+      --shadow:      0 8px 24px rgba(0,0,0,0.08);
+      --accent:      #2d5be3;
+      --accent-hover:#1f47c8;
+      --danger:      #c53030;
+      --danger-hover:#a12424;
+      --success:     #18794e;
+    }
+
+    [data-theme="dark"] {
+      --bg:          #0f1623;
+      --card:        #1a2235;
+      --border:      #2d3a50;
+      --text-main:   #e8edf5;
+      --text-sub:    #8fa3be;
+      --input-bg:    #111827;
+      --input-border:#2d3a50;
+      --shadow:      0 8px 24px rgba(0,0,0,0.35);
+    }
+
+    .dashboard-body {
+  display: block;
+  align-items: unset;
+  justify-content: unset;
+  background: #f4f7fb;
+  padding: 0;
+  min-height: 100vh;
+}
+
+    * { box-sizing: border-box; transition: background 0.25s, color 0.2s, border-color 0.2s; }
+
+    body {
+      background: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .dashboard-wrapper {
+      max-width: 860px;
+      margin: 30px auto;
+      padding: 0 20px 60px;
+    }
+
+    .page-title {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .page-subtitle {
+      font-size: 14px;
+      color: var(--text-sub);
+      margin-bottom: 30px;
+    }
+
+    /* ── SETTINGS CARD ── */
+    .settings-card {
+      background: var(--card);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .settings-card-header {
+      padding: 20px 28px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .settings-card-header .header-icon {
+      font-size: 20px;
+    }
+
+    .settings-card-header h2 {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin: 0;
+    }
+
+    .settings-card-header p {
+      font-size: 13px;
+      color: var(--text-sub);
+      margin: 2px 0 0;
+    }
+
+    .settings-card-body {
+      padding: 24px 28px;
+    }
+
+    /* ── FORM ── */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .form-row.single { grid-template-columns: 1fr; }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+
+    .form-group label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-sub);
+    }
+
+    .form-group input,
+    .form-group select {
+      padding: 11px 14px;
+      border: 1.5px solid var(--input-border);
+      border-radius: 10px;
+      background: var(--input-bg);
+      color: var(--text-main);
+      font-size: 14px;
+      outline: none;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: var(--accent);
+    }
+
+    .form-group input::placeholder { color: var(--text-sub); }
+
+    /* ── BUTTONS ── */
+    .btn {
+      padding: 11px 22px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .btn-primary  { background: var(--accent); color: white; }
+    .btn-primary:hover  { background: var(--accent-hover); }
+    .btn-danger   { background: var(--danger); color: white; }
+    .btn-danger:hover   { background: var(--danger-hover); }
+    .btn-ghost    { background: var(--input-bg); color: var(--text-main); border: 1.5px solid var(--border); }
+    .btn-ghost:hover    { border-color: var(--accent); color: var(--accent); }
+
+    .btn-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+
+    /* ── TOGGLE SWITCH ── */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .toggle-row:last-child { border-bottom: none; }
+
+    .toggle-label h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin: 0 0 3px;
+    }
+
+    .toggle-label p {
+      font-size: 12px;
+      color: var(--text-sub);
+      margin: 0;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 46px;
+      height: 26px;
+      flex-shrink: 0;
+    }
+
+    .toggle-switch input { display: none; }
+
+    .toggle-switch .slider {
+      position: absolute;
+      inset: 0;
+      background: var(--border);
+      border-radius: 999px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .toggle-switch .slider::before {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      top: 3px;
+      left: 3px;
+      transition: 0.3s;
+    }
+
+    .toggle-switch input:checked + .slider { background: var(--accent); }
+    .toggle-switch input:checked + .slider::before { transform: translateX(20px); }
+
+    /* ── THEME PICKER ── */
+    .theme-options {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .theme-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 18px;
+      border-radius: 12px;
+      border: 2px solid var(--border);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+      background: var(--input-bg);
+      transition: 0.2s;
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .theme-option:hover { border-color: var(--accent); }
+    .theme-option.selected { border-color: var(--accent); background: #eef3ff; color: var(--accent); }
+    [data-theme="dark"] .theme-option.selected { background: #1e2d4a; }
+
+    .theme-option .theme-dot {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── AVATAR SECTION ── */
+    .avatar-section {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 22px;
+    }
+
+    .avatar-big {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: #2d5be3;
+      color: white;
+      font-size: 26px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .avatar-info h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin: 0 0 4px;
+    }
+
+    .avatar-info p {
+      font-size: 13px;
+      color: var(--text-sub);
+      margin: 0;
+    }
+
+    /* ── DANGER ZONE ── */
+    .danger-zone {
+      border: 1.5px solid #fca5a5;
+      background: #fff5f5;
+      border-radius: 20px;
+      padding: 22px 28px;
+      margin-bottom: 24px;
+    }
+
+    [data-theme="dark"] .danger-zone {
+      background: #2a1515;
+      border-color: #7f1d1d;
+    }
+
+    .danger-zone h2 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--danger);
+      margin: 0 0 6px;
+    }
+
+    .danger-zone p {
+      font-size: 13px;
+      color: var(--text-sub);
+      margin: 0 0 16px;
+    }
+
+    /* ── SUCCESS TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      background: #1a2340;
+      color: white;
+      padding: 14px 22px;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      z-index: 9999;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.3s, transform 0.3s;
+      pointer-events: none;
+    }
+
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    /* ── NAVBAR DARK MODE PATCH ── */
+    [data-theme="dark"] .navbar {
+      background: #1a2235;
+      border-bottom: 1px solid #2d3a50;
+    }
+
+    [data-theme="dark"] .navbar-links a { color: #8fa3be; }
+    [data-theme="dark"] .navbar-links a:hover,
+    [data-theme="dark"] .navbar-links a.active { color: #e8edf5; }
+    [data-theme="dark"] .avatar { background: #2d5be3; }
+    [data-theme="dark"] .dropdown {
+      background: #1a2235;
+      border: 1px solid #2d3a50;
+      color: #e8edf5;
+    }
+    [data-theme="dark"] .dropdown-item { color: #8fa3be; }
+    [data-theme="dark"] .dropdown-item:hover { color: #e8edf5; }
+
+    @media (max-width: 640px) {
+      .form-row { grid-template-columns: 1fr; }
+      .theme-options { flex-direction: column; }
+    }
+  </style>
+</head>
+<body class="dashboard-body">
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="navbar-left">
+      <a href="Dashboard.html" class="navbar-logo">
+        <img src="../JobTrackLogo.png" alt="JobTrack" style="height: 70px;" />
+      </a>
+      <ul class="navbar-links">
+        <li><a href="Dashboard.html">Dashboard</a></li>
+        <li><a href="Applications.html">Applications</a></li>
+        <li><a href="Calendar.html">Calendar</a></li>
+        <li><a href="Resources.html">Resources</a></li>
+        <li><a href="Settings.html">Settings ⚙️</a></li>
+      </ul>
+    </div>
+    <div class="navbar-right">
+      <div class="avatar" id="userAvatar" onclick="toggleDropdown()">AS</div>
+      <div class="dropdown" id="avatarDropdown">
+        <div class="dropdown-name" id="dropdownName">User</div>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 8px 0;">
+        <a href="Settings.html" class="dropdown-item">Settings</a>
+        <a href="#" class="dropdown-item" onclick="logout()">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="dashboard-wrapper">
+    <div class="page-title">Settings</div>
+    <div class="page-subtitle">Manage your account, appearance, and preferences.</div>
+
+    <!-- ── PROFILE ── -->
+    <div class="settings-card">
+      <div class="settings-card-header">
+        <span class="header-icon">👤</span>
+        <div>
+          <h2>Profile Information</h2>
+          <p>Update your name and email address</p>
+        </div>
+      </div>
+      <div class="settings-card-body">
+        <div class="avatar-section">
+          <div class="avatar-big" id="avatarBig">AS</div>
+          <div class="avatar-info">
+            <h3 id="profileName">Loading...</h3>
+            <p id="profileEmail">Loading...</p>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="inputFullName" placeholder="Your full name" />
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="inputEmail" placeholder="your@email.com" />
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
+          <button class="btn btn-ghost" onclick="cancelProfile()">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CHANGE PASSWORD ── -->
+    <div class="settings-card">
+      <div class="settings-card-header">
+        <span class="header-icon">🔒</span>
+        <div>
+          <h2>Change Password</h2>
+          <p>Update your password to keep your account secure</p>
+        </div>
+      </div>
+      <div class="settings-card-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Current Password</label>
+            <input type="password" id="inputCurrentPassword" placeholder="Current password" />
+          </div>
+          <div class="form-group">
+            <label>New Password</label>
+            <input type="password" id="inputNewPassword" placeholder="New password" />
+          </div>
+        </div>
+        <div class="form-row single">
+          <div class="form-group">
+            <label>Confirm New Password</label>
+            <input type="password" id="inputConfirmPassword" placeholder="Confirm new password" />
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="changePassword()">Update Password</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── APPEARANCE ── -->
+    <div class="settings-card">
+      <div class="settings-card-header">
+        <span class="header-icon">🎨</span>
+        <div>
+          <h2>Appearance</h2>
+          <p>Choose how JobTrack looks for you</p>
+        </div>
+      </div>
+      <div class="settings-card-body">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label style="margin-bottom: 12px;">Theme</label>
+          <div class="theme-options">
+            <div class="theme-option selected" id="theme-light" onclick="setTheme('light')">
+              <div class="theme-dot" style="background: #f4f7fb; border: 2px solid #dbe3ee;"></div>
+              ☀️ Light Mode
+            </div>
+            <div class="theme-option" id="theme-dark" onclick="setTheme('dark')">
+              <div class="theme-dot" style="background: #1a2235; border: 2px solid #2d3a50;"></div>
+              🌙 Dark Mode
+            </div>
+            <div class="theme-option" id="theme-system" onclick="setTheme('system')">
+              <div class="theme-dot" style="background: linear-gradient(135deg, #f4f7fb 50%, #1a2235 50%); border: 2px solid #dbe3ee;"></div>
+              💻 System
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PREFERENCES ── -->
+    <div class="settings-card">
+      <div class="settings-card-header">
+        <span class="header-icon">⚙️</span>
+        <div>
+          <h2>Preferences</h2>
+          <p>Customize how you use JobTrack</p>
+        </div>
+      </div>
+      <div class="settings-card-body" style="padding-top: 8px; padding-bottom: 8px;">
+
+        <div class="toggle-row">
+          <div class="toggle-label">
+            <h4>Browser Notifications</h4>
+            <p>Get notified about upcoming interviews and deadlines</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="pref-notifications" onchange="savePreference('notifications', this.checked)" />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="toggle-row">
+          <div class="toggle-label">
+            <h4>Email Reminders</h4>
+            <p>Receive email reminders for calendar events</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="pref-email" onchange="savePreference('emailReminders', this.checked)" />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="toggle-row">
+          <div class="toggle-label">
+            <h4>Weekly Summary</h4>
+            <p>Get a weekly digest of your job search activity</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="pref-weekly" onchange="savePreference('weeklySummary', this.checked)" />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="toggle-row">
+          <div class="toggle-label">
+            <h4>Show Rejection Stats</h4>
+            <p>Display rejection count and rate on your dashboard</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="pref-rejections" checked onchange="savePreference('showRejections', this.checked)" />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── JOB SEARCH GOALS ── -->
+    <div class="settings-card">
+      <div class="settings-card-header">
+        <span class="header-icon">🎯</span>
+        <div>
+          <h2>Job Search Goals</h2>
+          <p>Set targets to keep your search on track</p>
+        </div>
+      </div>
+      <div class="settings-card-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Applications Per Week Goal</label>
+            <input type="number" id="goal-weekly" placeholder="e.g. 5" min="1" max="50" />
+          </div>
+          <div class="form-group">
+            <label>Target Job Title</label>
+            <input type="text" id="goal-title" placeholder="e.g. Software Engineer" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Target Industry</label>
+            <select id="goal-industry">
+              <option value="">Select industry</option>
+              <option value="tech">Technology</option>
+              <option value="finance">Finance</option>
+              <option value="healthcare">Healthcare</option>
+              <option value="consulting">Consulting</option>
+              <option value="engineering">Engineering</option>
+              <option value="marketing">Marketing</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Job Search Status</label>
+            <select id="goal-status">
+              <option value="actively-looking">Actively Looking</option>
+              <option value="open">Open to Opportunities</option>
+              <option value="not-looking">Not Currently Looking</option>
+            </select>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="saveGoals()">Save Goals</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── DANGER ZONE ── -->
+    <div class="danger-zone">
+      <h2>⚠️ Danger Zone</h2>
+      <p>These actions are permanent and cannot be undone. Please be certain before proceeding.</p>
+      <div class="btn-row">
+        <button class="btn btn-danger" onclick="confirmClearData()">Clear All Applications</button>
+        <button class="btn btn-ghost" onclick="confirmDeleteAccount()" style="color: var(--danger); border-color: #fca5a5;">Delete Account</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ── USER ──
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user) window.location.href = 'Index.html';
+
+    function getInitials(name) {
+      return name.split(' ').map(n => n[0]).join('').toUpperCase();
+    }
+
+    if (user?.full_name) {
+      const initials = getInitials(user.full_name);
+      document.getElementById('userAvatar').textContent   = initials;
+      document.getElementById('avatarBig').textContent    = initials;
+      document.getElementById('dropdownName').textContent = user.full_name;
+      document.getElementById('profileName').textContent  = user.full_name;
+      document.getElementById('profileEmail').textContent = user.email || '';
+      document.getElementById('inputFullName').value      = user.full_name;
+      document.getElementById('inputEmail').value         = user.email || '';
+    }
+
+    // ── NAVBAR ACTIVE ──
+    const currentPage = window.location.pathname.split('/').pop();
+    document.querySelectorAll('.navbar-links a').forEach(link => {
+      if (link.getAttribute('href') === currentPage) link.classList.add('active');
+    });
+
+    // ── DROPDOWN ──
+    function toggleDropdown() {
+      document.getElementById('avatarDropdown').classList.toggle('show');
+    }
+    document.addEventListener('click', function(e) {
+      const avatar   = document.getElementById('userAvatar');
+      const dropdown = document.getElementById('avatarDropdown');
+      if (!avatar.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.remove('show');
+      }
+    });
+
+    function logout() {
+      localStorage.removeItem('user');
+      window.location.href = 'Index.html';
+    }
+
+    // ── TOAST ──
+    function showToast(msg, color = '#1a2340') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.background = color;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    // ── THEME ──
+    function applyTheme(theme) {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const resolved    = theme === 'system' ? (prefersDark ? 'dark' : 'light') : theme;
+      document.documentElement.setAttribute('data-theme', resolved);
+
+      document.querySelectorAll('.theme-option').forEach(el => el.classList.remove('selected'));
+      const el = document.getElementById('theme-' + theme);
+      if (el) el.classList.add('selected');
+    }
+
+    function setTheme(theme) {
+      localStorage.setItem('jt-theme', theme);
+      applyTheme(theme);
+      showToast('Theme updated ✓', '#18794e');
+    }
+
+    // Load saved theme on page load
+    const savedTheme = localStorage.getItem('jt-theme') || 'light';
+    applyTheme(savedTheme);
+
+    // ── PROFILE ──
+    async function saveProfile() {
+      const fullName = document.getElementById('inputFullName').value.trim();
+      const email    = document.getElementById('inputEmail').value.trim();
+
+      if (!fullName || !email) {
+        showToast('Name and email are required.', '#c53030');
+        return;
+      }
+
+      try {
+        const res = await fetch(`http://localhost:3000/api/users/${user.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ full_name: fullName, email })
+        });
+
+        if (!res.ok) throw new Error('Update failed');
+
+        // Update localStorage
+        user.full_name = fullName;
+        user.email     = email;
+        localStorage.setItem('user', JSON.stringify(user));
+
+        // Update UI
+        const initials = getInitials(fullName);
+        document.getElementById('userAvatar').textContent   = initials;
+        document.getElementById('avatarBig').textContent    = initials;
+        document.getElementById('dropdownName').textContent = fullName;
+        document.getElementById('profileName').textContent  = fullName;
+        document.getElementById('profileEmail').textContent = email;
+
+        showToast('Profile updated ✓', '#18794e');
+      } catch (err) {
+        console.error(err);
+        showToast('Failed to update profile.', '#c53030');
+      }
+    }
+
+    function cancelProfile() {
+      document.getElementById('inputFullName').value = user.full_name || '';
+      document.getElementById('inputEmail').value    = user.email    || '';
+    }
+
+    // ── PASSWORD ──
+    async function changePassword() {
+      const current = document.getElementById('inputCurrentPassword').value;
+      const newPwd  = document.getElementById('inputNewPassword').value;
+      const confirm = document.getElementById('inputConfirmPassword').value;
+
+      if (!current || !newPwd || !confirm) {
+        showToast('All password fields are required.', '#c53030');
+        return;
+      }
+      if (newPwd !== confirm) {
+        showToast('New passwords do not match.', '#c53030');
+        return;
+      }
+      if (newPwd.length < 6) {
+        showToast('Password must be at least 6 characters.', '#c53030');
+        return;
+      }
+
+      try {
+        const res = await fetch(`http://localhost:3000/api/users/${user.id}/password`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ current_password: current, new_password: newPwd })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Failed');
+
+        document.getElementById('inputCurrentPassword').value = '';
+        document.getElementById('inputNewPassword').value     = '';
+        document.getElementById('inputConfirmPassword').value = '';
+
+        showToast('Password updated ✓', '#18794e');
+      } catch (err) {
+        showToast('Failed: ' + err.message, '#c53030');
+      }
+    }
+
+    // ── PREFERENCES (saved to localStorage) ──
+    function loadPreferences() {
+      const prefs = JSON.parse(localStorage.getItem('jt-prefs') || '{}');
+      document.getElementById('pref-notifications').checked = prefs.notifications  ?? false;
+      document.getElementById('pref-email').checked         = prefs.emailReminders ?? false;
+      document.getElementById('pref-weekly').checked        = prefs.weeklySummary  ?? false;
+      document.getElementById('pref-rejections').checked    = prefs.showRejections ?? true;
+    }
+
+    function savePreference(key, value) {
+      const prefs = JSON.parse(localStorage.getItem('jt-prefs') || '{}');
+      prefs[key] = value;
+      localStorage.setItem('jt-prefs', JSON.stringify(prefs));
+      showToast('Preference saved ✓', '#18794e');
+
+      // Request browser notification permission when turned on
+      if (key === 'notifications' && value) {
+        Notification.requestPermission().then(perm => {
+          if (perm !== 'granted') {
+            showToast('Notifications blocked by browser.', '#c53030');
+            document.getElementById('pref-notifications').checked = false;
+            prefs.notifications = false;
+            localStorage.setItem('jt-prefs', JSON.stringify(prefs));
+          }
+        });
+      }
+    }
+
+    // ── GOALS (saved to localStorage) ──
+    function loadGoals() {
+      const goals = JSON.parse(localStorage.getItem('jt-goals') || '{}');
+      if (goals.weeklyTarget) document.getElementById('goal-weekly').value   = goals.weeklyTarget;
+      if (goals.targetTitle)  document.getElementById('goal-title').value    = goals.targetTitle;
+      if (goals.industry)     document.getElementById('goal-industry').value = goals.industry;
+      if (goals.searchStatus) document.getElementById('goal-status').value   = goals.searchStatus;
+    }
+
+    function saveGoals() {
+      const goals = {
+        weeklyTarget: document.getElementById('goal-weekly').value,
+        targetTitle:  document.getElementById('goal-title').value.trim(),
+        industry:     document.getElementById('goal-industry').value,
+        searchStatus: document.getElementById('goal-status').value,
+      };
+      localStorage.setItem('jt-goals', JSON.stringify(goals));
+      showToast('Goals saved ✓', '#18794e');
+    }
+
+    // ── DANGER ZONE ──
+    function confirmClearData() {
+      if (!confirm('This will permanently delete ALL your job applications. Are you sure?')) return;
+      if (!confirm('This cannot be undone. Confirm again to proceed.')) return;
+
+      fetch(`http://localhost:3000/api/jobs/all/${user.id}`, { method: 'DELETE' })
+        .then(res => {
+          if (!res.ok) throw new Error();
+          showToast('All applications cleared.', '#c53030');
+        })
+        .catch(() => showToast('Failed to clear data.', '#c53030'));
+    }
+
+    function confirmDeleteAccount() {
+      const input = prompt('Type DELETE to permanently delete your account:');
+      if (input !== 'DELETE') {
+        showToast('Account deletion cancelled.', '#667085');
+        return;
+      }
+
+      fetch(`http://localhost:3000/api/users/${user.id}`, { method: 'DELETE' })
+        .then(res => {
+          if (!res.ok) throw new Error();
+          localStorage.removeItem('user');
+          localStorage.removeItem('jt-theme');
+          localStorage.removeItem('jt-prefs');
+          localStorage.removeItem('jt-goals');
+          window.location.href = 'Index.html';
+        })
+        .catch(() => showToast('Failed to delete account.', '#c53030'));
+    }
+
+    // ── INIT ──
+    loadPreferences();
+    loadGoals();
+  </script>
+</body>
+</html>
