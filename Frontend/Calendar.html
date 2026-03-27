@@ -293,6 +293,40 @@
     @media (max-width: 768px) {
       .calendar-layout { grid-template-columns: 1fr; }
     }
+
+    /* EVENT DETAIL MODAL */
+.detail-modal-box {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  width: 100%;
+  max-width: 400px;
+  margin: 20px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+}
+
+.detail-modal-box h2 {
+  color: #1f3c88;
+  margin: 0 0 8px;
+  font-size: 20px;
+}
+
+.detail-meta {
+  font-size: 13px;
+  color: #777;
+  margin-bottom: 20px;
+}
+
+.detail-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.edit-btn   { background: #1f3c88; }
+.edit-btn:hover { background: #16306d; }
+.delete-btn { background: #d9534f; }
+.delete-btn:hover { background: #b63d3a; }
   </style>
 </head>
 <body class="dashboard-body">
@@ -308,6 +342,7 @@
         <li><a href="Applications.html">Applications</a></li>
         <li><a href="Calendar.html">Calendar</a></li>
         <li><a href="Resources.html">Resources</a></li>
+        <li><a href="Settings.html">Settings ⚙️</a></li>
       </ul>
     </div>
     <div class="navbar-right">
@@ -412,8 +447,45 @@
     </div>
   </div>
 
+  <!-- EVENT DETAIL MODAL (Edit / Delete) -->
+<div class="modal-overlay" id="detailModal">
+  <div class="detail-modal-box">
+    <h2 id="detailTitle"></h2>
+    <div class="detail-meta" id="detailMeta"></div>
+
+    <div class="form-group">
+      <label>Title</label>
+      <input type="text" id="editTitle" />
+    </div>
+    <div class="form-group">
+      <label>Date</label>
+      <input type="date" id="editDate" />
+    </div>
+    <div class="form-group">
+      <label>Time (optional)</label>
+      <input type="time" id="editTime" />
+    </div>
+    <div class="form-group">
+      <label>Type</label>
+      <select id="editType">
+        <option value="interview">Interview</option>
+        <option value="deadline">Deadline</option>
+        <option value="followup">Follow-up</option>
+        <option value="offer">Offer</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+
+    <div class="detail-buttons">
+      <button class="top-btn edit-btn" onclick="updateEvent()" style="flex:1;">Save Changes</button>
+      <button class="top-btn delete-btn" onclick="deleteEvent()" style="flex:1;">Delete</button>
+      <button class="top-btn cancel-btn" onclick="closeDetailModal()" style="flex:1;">Cancel</button>
+    </div>
+  </div>
+</div>
+
   <script>
-    // ---- USER / AUTH ----
+// ---- USER / AUTH ----
 const user = JSON.parse(localStorage.getItem('user'));
 if (!user) window.location.href = 'Index.html';
 
@@ -448,6 +520,7 @@ function logout() {
 // ---- CALENDAR STATE ----
 let currentDate = new Date();
 let events = [];
+let selectedEventId = null; // tracks which event is open in detail modal
 
 // ---- CONSTANTS ----
 const typeLabels = {
@@ -474,14 +547,10 @@ const tagColors = {
   other:     'background:#e5dcff; color:#5c3fa3;'
 };
 
-// ---- FETCH EVENTS FROM BACKEND ----
+// ---- FETCH EVENTS ----
 async function loadEvents() {
   try {
-    const response = await fetch(`http://localhost:3000/api/calendar/events?user_id=${user.id}`, {
-  headers: {
-    'Authorization': `Bearer ${user.token}`
-  }
-});
+    const response = await fetch(`http://localhost:3000/api/calendar/events?user_id=${user.id}`);
     if (!response.ok) throw new Error('Failed to fetch events');
     events = await response.json();
   } catch (err) {
@@ -506,8 +575,7 @@ function renderCalendar() {
   const tbody = document.getElementById('calBody');
   tbody.innerHTML = '';
 
-  let day = 1;
-  let nextDay = 1;
+  let day = 1, nextDay = 1;
   let prevDay = daysInPrev - firstDay + 1;
 
   for (let row = 0; row < 6; row++) {
@@ -537,7 +605,8 @@ function renderCalendar() {
         const dayEvents = events.filter(e => e.date === cellDate);
         let html = `<div class="day-num">${day}</div>`;
         dayEvents.forEach(ev => {
-          html += `<div class="event-pill ${pillClass[ev.type]}">${ev.title}</div>`;
+          // each pill is now clickable and opens the detail modal
+          html += `<div class="event-pill ${pillClass[ev.type]}" onclick="openDetailModal(${ev.id})">${ev.title}</div>`;
         });
         td.innerHTML = html;
         day++;
@@ -556,22 +625,19 @@ function renderSidePanel() {
   const today = new Date();
   const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
 
-  // Today's events
   const todayEvs = events.filter(e => e.date === todayStr);
   const todayEl = document.getElementById('todayEvents');
   todayEl.innerHTML = todayEvs.length === 0
     ? '<p style="color:#aaa; font-size:13px;">No events today.</p>'
     : todayEvs.map(e => `
-        <div class="event-item">
+        <div class="event-item" onclick="openDetailModal(${e.id})" style="cursor:pointer;">
           <div class="event-item-title">${e.title}</div>
           <div class="event-item-meta">
             <span class="event-tag" style="${tagColors[e.type]}">${typeLabels[e.type]}</span>
             ${e.time ? '· ' + formatTime(e.time) : ''}
           </div>
-        </div>
-      `).join('');
+        </div>`).join('');
 
-  // Upcoming events (next 5 after today)
   const upcoming = events
     .filter(e => e.date > todayStr)
     .sort((a, b) => a.date.localeCompare(b.date))
@@ -581,14 +647,89 @@ function renderSidePanel() {
   upcomingEl.innerHTML = upcoming.length === 0
     ? '<p style="color:#aaa; font-size:13px;">No upcoming events.</p>'
     : upcoming.map(e => `
-        <div class="event-item">
+        <div class="event-item" onclick="openDetailModal(${e.id})" style="cursor:pointer;">
           <div class="event-item-title">${e.title}</div>
           <div class="event-item-meta">
             <span class="event-tag" style="${tagColors[e.type]}">${typeLabels[e.type]}</span>
             · ${formatDate(e.date)}${e.time ? ' · ' + formatTime(e.time) : ''}
           </div>
-        </div>
-      `).join('');
+        </div>`).join('');
+}
+
+// ---- DETAIL MODAL (Edit / Delete) ----
+function openDetailModal(id) {
+  const ev = events.find(e => e.id === id);
+  if (!ev) return;
+
+  selectedEventId = id;
+
+  // Pre-fill the edit fields
+  document.getElementById('editTitle').value = ev.title;
+  document.getElementById('editDate').value  = ev.date;
+  document.getElementById('editTime').value  = ev.time || '';
+  document.getElementById('editType').value  = ev.type;
+
+  document.getElementById('detailModal').classList.add('show');
+}
+
+function closeDetailModal() {
+  selectedEventId = null;
+  document.getElementById('detailModal').classList.remove('show');
+}
+
+// ---- UPDATE EVENT ----
+async function updateEvent() {
+  const title = document.getElementById('editTitle').value.trim();
+  const date  = document.getElementById('editDate').value;
+  const time  = document.getElementById('editTime').value;
+  const type  = document.getElementById('editType').value;
+
+  if (!title || !date) {
+    alert('Title and date are required.');
+    return;
+  }
+
+  try {
+    const res = await fetch(`http://localhost:3000/api/calendar/events/${selectedEventId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, date, time, type })
+    });
+
+    if (!res.ok) throw new Error('Update failed');
+
+    // Update locally so the page refreshes instantly
+    const idx = events.findIndex(e => e.id === selectedEventId);
+    events[idx] = { ...events[idx], title, date, time, type };
+
+    closeDetailModal();
+    renderCalendar();
+  } catch (err) {
+    console.error(err);
+    alert('Failed to update event.');
+  }
+}
+
+// ---- DELETE EVENT ----
+async function deleteEvent() {
+  if (!confirm('Are you sure you want to delete this event?')) return;
+
+  try {
+    const res = await fetch(`http://localhost:3000/api/calendar/events/${selectedEventId}`, {
+      method: 'DELETE'
+    });
+
+    if (!res.ok) throw new Error('Delete failed');
+
+    // Remove from local array
+    events = events.filter(e => e.id !== selectedEventId);
+
+    closeDetailModal();
+    renderCalendar();
+  } catch (err) {
+    console.error(err);
+    alert('Failed to delete event.');
+  }
 }
 
 // ---- HELPERS ----
@@ -609,7 +750,7 @@ function changeMonth(dir) {
   renderCalendar();
 }
 
-// ---- MODAL ----
+// ---- ADD EVENT MODAL ----
 function openAddEvent() {
   document.getElementById('addEventModal').classList.add('show');
 }
@@ -617,9 +758,9 @@ function openAddEvent() {
 function closeAddEvent() {
   document.getElementById('addEventModal').classList.remove('show');
   document.getElementById('eventTitle').value = '';
-  document.getElementById('eventDate').value = '';
-  document.getElementById('eventTime').value = '';
-  document.getElementById('eventType').value = 'interview';
+  document.getElementById('eventDate').value  = '';
+  document.getElementById('eventTime').value  = '';
+  document.getElementById('eventType').value  = 'interview';
 }
 
 async function saveEvent() {
@@ -635,13 +776,10 @@ async function saveEvent() {
 
   try {
     const res = await fetch('http://localhost:3000/api/calendar/events', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${user.token}`
-  },
-  body: JSON.stringify({ user_id: user.id, title, date, time, type })
-});
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_id: user.id, title, date, time, type })
+    });
 
     if (!res.ok) throw new Error('Save failed');
     const saved = await res.json();
@@ -650,7 +788,7 @@ async function saveEvent() {
     renderCalendar();
   } catch (err) {
     console.error(err);
-    alert('Failed to save event. Please try again.');
+    alert('Failed to save event.');
   }
 }
 
