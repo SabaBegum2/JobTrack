@@ -36,3 +36,18 @@ CREATE TABLE calendar_events (
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
   INDEX idx_user_date (user_id, date)
 );
+
+CREATE TABLE user_settings (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL UNIQUE,
+  theme ENUM('light', 'dark') DEFAULT 'light',
+  email_reminders BOOLEAN DEFAULT FALSE,
+  weekly_summary BOOLEAN DEFAULT FALSE,
+  job_search_goal INT DEFAULT NULL,
+  preferred_job_type ENUM('full-time', 'part-time', 'contract', 'internship', 'remote') DEFAULT NULL,
+  preferred_location VARCHAR(255) DEFAULT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
