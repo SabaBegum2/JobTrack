@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const db = require('./db');
 require('dotenv').config();
+const crypto = require('crypto');
 
 const app = express();
 //app.use(cors());
@@ -60,43 +61,48 @@ app.post('/api/login', async (req, res) => {
 });
 
 // FORGOT PASSWORD
-app.post('/api/forgot-password', (req, res) => {
+app.post('/api/forgot-password', async (req, res) => {
   const { email } = req.body;
 
   if (!email) {
     return res.status(400).json({ message: 'Email is required' });
   }
 
-  const sql = 'SELECT * FROM users WHERE email = ?';
-  db.query(sql, [email], (err, results) => {
-    if (err) return res.status(500).json({ message: 'Server error' });
+  try {
+    const [results] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
 
     if (results.length === 0) {
       return res.status(404).json({ message: 'Email not found' });
     }
 
     const token = crypto.randomBytes(32).toString('hex');
-    const expires_at = new Date(Date.now() + 1 * 60 * 60 * 1000); // 1 hour
+    const expires_at = new Date(Date.now() + 1 * 60 * 60 * 1000);
 
-    const insertSql = 'INSERT INTO password_resets (email, token, expires_at) VALUES (?, ?, ?)';
-    db.query(insertSql, [email, token, expires_at], (err) => {
-      if (err) return res.status(500).json({ message: 'Server error' });
-      res.json({ message: 'Reset token generated', token });
-    });
-  });
+    await db.query(
+      'INSERT INTO password_resets (email, token, expires_at) VALUES (?, ?, ?)',
+      [email, token, expires_at]
+    );
+
+    res.json({ message: 'Reset token generated', token });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
 });
 
 // RESET PASSWORD
-app.post('/api/reset-password', (req, res) => {
+app.post('/api/reset-password', async (req, res) => {
   const { token, new_password } = req.body;
 
   if (!token || !new_password) {
     return res.status(400).json({ message: 'Token and new password are required' });
   }
 
-  const sql = 'SELECT * FROM password_resets WHERE token = ? AND expires_at > NOW()';
-  db.query(sql, [token], (err, results) => {
-    if (err) return res.status(500).json({ message: 'Server error' });
+  try {
+    const [results] = await db.query(
+      'SELECT * FROM password_resets WHERE token = ? AND expires_at > NOW()',
+      [token]
+    );
 
     if (results.length === 0) {
       return res.status(400).json({ message: 'Invalid or expired token' });
@@ -104,16 +110,14 @@ app.post('/api/reset-password', (req, res) => {
 
     const email = results[0].email;
 
-    const updateSql = 'UPDATE users SET password = ? WHERE email = ?';
-    db.query(updateSql, [new_password, email], (err) => {
-      if (err) return res.status(500).json({ message: 'Server error' });
+    await db.query('UPDATE users SET password = ? WHERE email = ?', [new_password, email]);
+    await db.query('DELETE FROM password_resets WHERE token = ?', [token]);
 
-      const deleteSql = 'DELETE FROM password_resets WHERE token = ?';
-      db.query(deleteSql, [token], () => {});
-
-      res.json({ message: 'Password reset successfully' });
-    });
-  });
+    res.json({ message: 'Password reset successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
 });
 
 // GET JOBS FOR USER
