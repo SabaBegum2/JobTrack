@@ -1,258 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>JobTrack - Application</title>
   <link rel="stylesheet" href="Styles.css" />
-  <style>
-
-    body {
-      display: block !important;
-      align-items: unset !important;
-      justify-content: unset !important;
-      background: #f4f7fb !important;
-      padding: 0 !important;
-      min-height: 100vh;
-    }
-
-    .dashboard-wrapper {
-      min-height: 100vh;
-      background: #f4f7fb;
-      padding: 30px;
-    }
-
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: white;
-      padding: 18px 24px;
-      border-radius: 16px;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-      margin-bottom: 25px;
-      flex-wrap: wrap;
-      gap: 15px;
-    }
-
-    .topbar-left h1 {
-      font-size: 28px;
-      margin: 0;
-      color: #1f3c88;
-    }
-
-    .topbar-left p {
-      margin: 6px 0 0;
-      color: #666;
-      font-size: 14px;
-    }
-
-    .topbar-right {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .top-btn {
-      background: #1f3c88;
-      color: white;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 14px;
-      text-decoration: none;
-      transition: 0.3s;
-    }
-
-    .top-btn:hover {
-      background: #16306d;
-    }
-
-    .logout-btn {
-      background: #d9534f;
-    }
-
-    .logout-btn:hover {
-      background: #b63d3a;
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 20px;
-      margin-bottom: 25px;
-    }
-
-    .stat-card {
-      background: white;
-      border-radius: 16px;
-      padding: 20px;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-      text-align: center;
-    }
-
-    .stat-card h3 {
-      margin: 0;
-      font-size: 16px;
-      color: #555;
-    }
-
-    .stat-card p {
-      margin-top: 10px;
-      font-size: 28px;
-      font-weight: bold;
-      color: #1f3c88;
-    }
-
-    .dashboard-card {
-      background: white;
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-    }
-
-    .dashboard-card h2 {
-      margin-top: 0;
-      color: #1f3c88;
-      margin-bottom: 18px;
-    }
-
-    .table-responsive {
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 750px;
-    }
-
-    th, td {
-      text-align: left;
-      padding: 14px 12px;
-      border-bottom: 1px solid #e5e5e5;
-      font-size: 14px;
-    }
-
-    th {
-      background: #f8faff;
-      color: #333;
-    }
-
-    .status {
-      padding: 6px 12px;
-      border-radius: 30px;
-      font-size: 12px;
-      font-weight: 600;
-      display: inline-block;
-    }
-
-    .interested { background: #fff4cc; color: #8a6d1d; }
-    .applied { background: #d9ecff; color: #0d5ea8; }
-    .interviewing { background: #e5dcff; color: #5c3fa3; }
-    .offer { background: #d9f7df; color: #267a38; }
-    .rejected { background: #ffe0e0; color: #b33939; }
-
-    .action-btn {
-      border: none;
-      padding: 8px 12px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 12px;
-      margin-right: 6px;
-    }
-
-    .edit-btn { background: #1f3c88; color: white; }
-    .delete-btn { background: #d9534f; color: white; }
-
-    .empty-text {
-      color: #777;
-      text-align: center;
-      padding: 20px 0;
-      font-size: 15px;
-    }
-
-    /* MODAL */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 999;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal-overlay.show {
-      display: flex;
-    }
-
-    .modal-box {
-      background: white;
-      border-radius: 16px;
-      padding: 32px;
-      width: 100%;
-      max-width: 480px;
-      margin: 20px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
-    }
-
-    .modal-box h2 {
-      color: #1f3c88;
-      margin: 0 0 20px;
-      font-size: 22px;
-    }
-
-    .modal-box .form-group {
-      margin-bottom: 16px;
-    }
-
-    .modal-box label {
-      display: block;
-      margin-bottom: 6px;
-      color: #334155;
-      font-size: 14px;
-      font-weight: 600;
-    }
-
-    .modal-box input,
-    .modal-box select {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1px solid #dbe3ee;
-      border-radius: 10px;
-      background: #f8fafc;
-      font-size: 14px;
-    }
-
-    .modal-box input:focus,
-    .modal-box select:focus {
-      outline: none;
-      border-color: #2563eb;
-      background: white;
-    }
-
-    .modal-buttons {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .modal-message {
-      margin-top: 12px;
-      text-align: center;
-      font-size: 14px;
-      font-weight: 600;
-      min-height: 20px;
-    }
-  </style>
 </head>
 
-<body>
+<body class="dashboard-page">
 
   <!-- NAVBAR -->
   <nav class="navbar">
@@ -367,7 +123,7 @@
       </div>
       <div class="modal-buttons">
         <button onclick="submitApplication()" class="top-btn" style="flex:1;">Save</button>
-        <button onclick="closeModal()" class="top-btn logout-btn" style="flex:1;">Cancel</button>
+        <button onclick="closeModal()" class="top-btn cancel-btn" style="flex:1;">Cancel</button>
       </div>
       <div class="modal-message" id="modalMessage"></div>
     </div>
@@ -406,38 +162,35 @@
       </div>
       <div class="modal-buttons">
         <button onclick="submitEdit()" class="top-btn" style="flex:1;">Save Changes</button>
-        <button onclick="closeEditModal()" class="top-btn logout-btn" style="flex:1;">Cancel</button>
+        <button onclick="closeEditModal()" class="top-btn cancel-btn" style="flex:1;">Cancel</button>
       </div>
       <div class="modal-message" id="editModalMessage"></div>
     </div>
   </div>
 
   <script>
-    // Set avatar initials and dropdown name from logged in user
+    const savedTheme = localStorage.getItem('jt-theme') || 'dark';
+    if (savedTheme === 'light') document.body.classList.add('light-mode');
+    if (savedTheme === 'dark') document.body.classList.add('dark-mode');
+
+    // Apply saved theme
     const user = JSON.parse(localStorage.getItem('user'));
-    if (!user) {
-      window.location.href = 'Index.html';
-    }
+    if (!user) window.location.href = 'Login.html';
     if (user && user.full_name) {
       const initials = user.full_name.split(' ').map(n => n[0]).join('').toUpperCase();
       document.getElementById('userAvatar').textContent = initials;
       document.getElementById('dropdownName').textContent = user.full_name;
     }
 
-    // Auto-set active nav link based on current page
     const currentPage = window.location.pathname.split('/').pop();
     document.querySelectorAll('.navbar-links a').forEach(link => {
-      if (link.getAttribute('href') === currentPage) {
-        link.classList.add('active');
-      }
+      if (link.getAttribute('href') === currentPage) link.classList.add('active');
     });
 
-    // Toggle dropdown
     function toggleDropdown() {
       document.getElementById('avatarDropdown').classList.toggle('show');
     }
 
-    // Close dropdown if clicked outside
     document.addEventListener('click', function (e) {
       const avatar = document.getElementById('userAvatar');
       const dropdown = document.getElementById('avatarDropdown');
@@ -446,13 +199,11 @@
       }
     });
 
-    // Logout
     function logout() {
       localStorage.removeItem('user');
-      window.location.href = 'Index.html';
+      window.location.href = 'Login.html';
     }
 
-    // ADD MODAL
     function openModal() {
       document.getElementById('addModal').classList.add('show');
     }
@@ -487,16 +238,11 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ userId: user.id, company, title, date, status, notes })
         });
-
         const data = await response.json();
-
         if (response.ok) {
           modalMessage.style.color = '#267a38';
           modalMessage.textContent = 'Application added!';
-          setTimeout(() => {
-            closeModal();
-            loadJobs();
-          }, 1000);
+          setTimeout(() => { closeModal(); loadJobs(); }, 1000);
         } else {
           modalMessage.style.color = '#d9534f';
           modalMessage.textContent = data.message || 'Failed to add application.';
@@ -507,7 +253,6 @@
       }
     }
 
-    // EDIT MODAL
     function editApplication(id, company, title, date, status, notes) {
       document.getElementById('editJobId').value = id;
       document.getElementById('editCompany').value = company;
@@ -545,16 +290,11 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ company, title, date, status, notes })
         });
-
         const data = await response.json();
-
         if (response.ok) {
           editModalMessage.style.color = '#267a38';
           editModalMessage.textContent = 'Application updated!';
-          setTimeout(() => {
-            closeEditModal();
-            loadJobs();
-          }, 1000);
+          setTimeout(() => { closeEditModal(); loadJobs(); }, 1000);
         } else {
           editModalMessage.style.color = '#d9534f';
           editModalMessage.textContent = data.message || 'Failed to update.';
@@ -568,7 +308,6 @@
     const applicationBody = document.getElementById("applicationBody");
     const emptyMessage = document.getElementById("emptyMessage");
 
-    // Fetch jobs from backend
     async function loadJobs() {
       try {
         const response = await fetch(`http://localhost:3000/api/jobs/${user.id}`);
@@ -594,15 +333,13 @@
 
     function renderApplications(applications) {
       applicationBody.innerHTML = "";
-
       if (applications.length === 0) {
         emptyMessage.style.display = "block";
         document.getElementById("applicationTable").style.display = "none";
         return;
-      } else {
-        emptyMessage.style.display = "none";
-        document.getElementById("applicationTable").style.display = "table";
       }
+      emptyMessage.style.display = "none";
+      document.getElementById("applicationTable").style.display = "table";
 
       applications.forEach((app) => {
         const row = document.createElement("tr");
@@ -626,15 +363,14 @@
 
     function updateStats(applications) {
       document.getElementById("totalCount").textContent = applications.length;
-      document.getElementById("appliedCount").textContent = applications.filter(app => app.status === "Applied").length;
-      document.getElementById("interviewCount").textContent = applications.filter(app => app.status === "Interviewing").length;
-      document.getElementById("offerCount").textContent = applications.filter(app => app.status === "Offer").length;
-      document.getElementById("rejectedCount").textContent = applications.filter(app => app.status === "Rejected").length;
+      document.getElementById("appliedCount").textContent = applications.filter(a => a.status === "Applied").length;
+      document.getElementById("interviewCount").textContent = applications.filter(a => a.status === "Interviewing").length;
+      document.getElementById("offerCount").textContent = applications.filter(a => a.status === "Offer").length;
+      document.getElementById("rejectedCount").textContent = applications.filter(a => a.status === "Rejected").length;
     }
 
     async function deleteApplication(id) {
-      const confirmDelete = confirm("Are you sure you want to delete this application?");
-      if (confirmDelete) {
+      if (confirm("Are you sure you want to delete this application?")) {
         try {
           await fetch(`http://localhost:3000/api/jobs/${id}`, { method: 'DELETE' });
           loadJobs();
@@ -647,4 +383,5 @@
     loadJobs();
   </script>
 </body>
+
 </html>

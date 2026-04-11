@@ -1,337 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>JobTrack - Calendar</title>
   <link rel="stylesheet" href="Styles.css" />
   <style>
-    .dashboard-body {
-      display: block;
-      align-items: unset;
-      justify-content: unset;
-      background: #f4f7fb;
-      padding: 0;
-      min-height: 100vh;
-    }
-
-    .dashboard-wrapper {
-      padding: 30px;
-    }
-
     .page-title {
-      font-size: 26px;
-      font-weight: 700;
-      color: #1f3c88;
-      margin-bottom: 24px;
+      font-size: 40px;
     }
-
-    .calendar-layout {
-      display: grid;
-      grid-template-columns: 1fr 300px;
-      gap: 24px;
-      align-items: start;
-    }
-
-    /* CALENDAR */
-    .calendar-card {
-      background: white;
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-    }
-
-    .calendar-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .calendar-header h2 {
-      font-size: 20px;
-      font-weight: 700;
-      color: #111;
-    }
-
-    .cal-nav {
-      display: flex;
-      gap: 8px;
-    }
-
-    .cal-nav button {
-      background: #f4f7fb;
-      border: none;
-      border-radius: 8px;
-      width: 32px;
-      height: 32px;
-      cursor: pointer;
-      font-size: 16px;
-      color: #555;
-    }
-
-    .cal-nav button:hover {
-      background: #e5e9f0;
-    }
-
-    .calendar-grid {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    .calendar-grid th {
-      text-align: center;
-      font-size: 12px;
-      font-weight: 600;
-      color: #999;
-      padding: 8px 0;
-      background: none;
-      border: none;
-      text-transform: uppercase;
-    }
-
-    .calendar-grid td {
-      vertical-align: top;
-      padding: 6px;
-      border: 1px solid #f0f0f0;
-      height: 80px;
-      width: 14.28%;
-      font-size: 13px;
-      color: #333;
-    }
-
-    .calendar-grid td.other-month {
-      color: #ccc;
-    }
-
-    .calendar-grid td.today .day-num {
-      background: #1f3c88;
-      color: white;
-      border-radius: 50%;
-      width: 26px;
-      height: 26px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .day-num {
-      font-weight: 600;
-      margin-bottom: 4px;
-      width: 26px;
-      height: 26px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .event-pill {
-      font-size: 11px;
-      font-weight: 600;
-      padding: 2px 6px;
-      border-radius: 4px;
-      margin-bottom: 2px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      cursor: pointer;
-    }
-
-    .pill-interview { background: #d9f7df; color: #267a38; }
-    .pill-deadline  { background: #ffe0e0; color: #b33939; }
-    .pill-followup  { background: #fff4cc; color: #8a6d1d; }
-    .pill-offer     { background: #d9ecff; color: #0d5ea8; }
-    .pill-other     { background: #e5dcff; color: #5c3fa3; }
-
-    /* SIDE PANEL */
-    .side-panel {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .side-card {
-      background: white;
-      border-radius: 16px;
-      padding: 20px;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-    }
-
-    .side-card h3 {
-      font-size: 15px;
-      font-weight: 700;
-      color: #1f3c88;
-      margin-bottom: 14px;
-    }
-
-    .event-item {
-      margin-bottom: 12px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid #f0f0f0;
-    }
-
-    .event-item:last-child {
-      margin-bottom: 0;
-      padding-bottom: 0;
-      border-bottom: none;
-    }
-
-    .event-item-title {
-      font-size: 14px;
-      font-weight: 600;
-      color: #111;
-      margin-bottom: 4px;
-    }
-
-    .event-item-meta {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 12px;
-      color: #777;
-    }
-
-    .event-tag {
-      font-size: 11px;
-      font-weight: 600;
-      padding: 2px 8px;
-      border-radius: 20px;
-    }
-
-    /* LEGEND */
-    .legend-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 13px;
-      color: #444;
-    }
-
-    .legend-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-    }
-
-    /* ADD EVENT MODAL */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
-      z-index: 999;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal-overlay.show { display: flex; }
-
-    .modal-box {
-      background: white;
-      border-radius: 16px;
-      padding: 32px;
-      width: 100%;
-      max-width: 440px;
-      margin: 20px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-    }
-
-    .modal-box h2 {
-      color: #1f3c88;
-      margin: 0 0 20px;
-      font-size: 20px;
-    }
-
-    .modal-box .form-group { margin-bottom: 14px; }
-
-    .modal-box label {
-      display: block;
-      margin-bottom: 6px;
-      font-size: 13px;
-      font-weight: 600;
-      color: #334155;
-    }
-
-    .modal-box input,
-    .modal-box select {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid #dbe3ee;
-      border-radius: 10px;
-      background: #f8fafc;
-      font-size: 14px;
-    }
-
-    .modal-buttons {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .top-btn {
-      background: #1f3c88;
-      color: white;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: 0.3s;
-    }
-
-    .top-btn:hover { background: #16306d; }
-    .cancel-btn { background: #d9534f; }
-    .cancel-btn:hover { background: #b63d3a; }
-
-    @media (max-width: 768px) {
-      .calendar-layout { grid-template-columns: 1fr; }
-    }
-
-    /* EVENT DETAIL MODAL */
-.detail-modal-box {
-  background: white;
-  border-radius: 16px;
-  padding: 32px;
-  width: 100%;
-  max-width: 400px;
-  margin: 20px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-}
-
-.detail-modal-box h2 {
-  color: #1f3c88;
-  margin: 0 0 8px;
-  font-size: 20px;
-}
-
-.detail-meta {
-  font-size: 13px;
-  color: #777;
-  margin-bottom: 20px;
-}
-
-.detail-buttons {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.edit-btn   { background: #1f3c88; }
-.edit-btn:hover { background: #16306d; }
-.delete-btn { background: #d9534f; }
-.delete-btn:hover { background: #b63d3a; }
   </style>
 </head>
-<body class="dashboard-body">
 
-  <!-- NAVBAR -->
+<body class="dashboard-page">
+
   <nav class="navbar">
     <div class="navbar-left">
       <a href="Dashboard.html" class="navbar-logo">
@@ -356,9 +39,14 @@
   </nav>
 
   <div class="dashboard-wrapper">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
-      <div class="page-title">Calendar</div>
-      <button class="top-btn" onclick="openAddEvent()">+ Add Event</button>
+    <div class="topbar">
+      <div class="topbar-left">
+        <h1>Calendar</h1>
+        <p>Track your interviews, deadlines, and follow-ups</p>
+      </div>
+      <div class="topbar-right">
+        <button class="top-btn" onclick="openAddEvent()">+ Add Event</button>
+      </div>
     </div>
 
     <div class="calendar-layout">
@@ -375,8 +63,13 @@
         <table class="calendar-grid">
           <thead>
             <tr>
-              <th>Sun</th><th>Mon</th><th>Tue</th>
-              <th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th>
+              <th>Sun</th>
+              <th>Mon</th>
+              <th>Tue</th>
+              <th>Wed</th>
+              <th>Thu</th>
+              <th>Fri</th>
+              <th>Sat</th>
             </tr>
           </thead>
           <tbody id="calBody"></tbody>
@@ -389,24 +82,38 @@
         <!-- TODAY -->
         <div class="side-card">
           <h3>Today</h3>
-          <div id="todayEvents"><p style="color:#aaa; font-size:13px;">No events today.</p></div>
+          <div id="todayEvents">
+            <p style="color:#aaa; font-size:13px;">No events today.</p>
+          </div>
         </div>
 
         <!-- UPCOMING -->
         <div class="side-card">
           <h3>Upcoming</h3>
-          <div id="upcomingEvents"><p style="color:#aaa; font-size:13px;">No upcoming events.</p></div>
+          <div id="upcomingEvents">
+            <p style="color:#aaa; font-size:13px;">No upcoming events.</p>
+          </div>
         </div>
 
         <!-- LEGEND -->
         <div class="side-card">
           <h3>Legend</h3>
           <div class="legend-list">
-            <div class="legend-item"><div class="legend-dot" style="background:#267a38;"></div> Interview</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#b33939;"></div> Deadline</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#8a6d1d;"></div> Follow-up</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#0d5ea8;"></div> Offer</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#5c3fa3;"></div> Other</div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#267a38;"></div> Interview
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#b33939;"></div> Deadline
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#8a6d1d;"></div> Follow-up
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#0d5ea8;"></div> Offer
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#5c3fa3;"></div> Other
+            </div>
           </div>
         </div>
 
@@ -448,352 +155,334 @@
   </div>
 
   <!-- EVENT DETAIL MODAL (Edit / Delete) -->
-<div class="modal-overlay" id="detailModal">
-  <div class="detail-modal-box">
-    <h2 id="detailTitle"></h2>
-    <div class="detail-meta" id="detailMeta"></div>
-
-    <div class="form-group">
-      <label>Title</label>
-      <input type="text" id="editTitle" />
-    </div>
-    <div class="form-group">
-      <label>Date</label>
-      <input type="date" id="editDate" />
-    </div>
-    <div class="form-group">
-      <label>Time (optional)</label>
-      <input type="time" id="editTime" />
-    </div>
-    <div class="form-group">
-      <label>Type</label>
-      <select id="editType">
-        <option value="interview">Interview</option>
-        <option value="deadline">Deadline</option>
-        <option value="followup">Follow-up</option>
-        <option value="offer">Offer</option>
-        <option value="other">Other</option>
-      </select>
-    </div>
-
-    <div class="detail-buttons">
-      <button class="top-btn edit-btn" onclick="updateEvent()" style="flex:1;">Save Changes</button>
-      <button class="top-btn delete-btn" onclick="deleteEvent()" style="flex:1;">Delete</button>
-      <button class="top-btn cancel-btn" onclick="closeDetailModal()" style="flex:1;">Cancel</button>
+  <div class="modal-overlay" id="detailModal">
+    <div class="detail-modal-box">
+      <h2 id="detailTitle"></h2>
+      <div class="detail-meta" id="detailMeta"></div>
+      <div class="form-group">
+        <label>Title</label>
+        <input type="text" id="editTitle" />
+      </div>
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" id="editDate" />
+      </div>
+      <div class="form-group">
+        <label>Time (optional)</label>
+        <input type="time" id="editTime" />
+      </div>
+      <div class="form-group">
+        <label>Type</label>
+        <select id="editType">
+          <option value="interview">Interview</option>
+          <option value="deadline">Deadline</option>
+          <option value="followup">Follow-up</option>
+          <option value="offer">Offer</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="detail-buttons">
+        <button class="top-btn edit-btn" onclick="updateEvent()" style="flex:1;">Save Changes</button>
+        <button class="top-btn delete-btn" onclick="deleteEvent()" style="flex:1;">Delete</button>
+        <button class="top-btn cancel-btn" onclick="closeDetailModal()" style="flex:1;">Cancel</button>
+      </div>
     </div>
   </div>
-</div>
 
   <script>
-// ---- USER / AUTH ----
-const user = JSON.parse(localStorage.getItem('user'));
-if (!user) window.location.href = 'Index.html';
+    const savedTheme = localStorage.getItem('jt-theme') || 'dark';
+    if (savedTheme === 'light') document.body.classList.add('light-mode');
+    if (savedTheme === 'dark') document.body.classList.add('dark-mode');
 
-if (user && user.full_name) {
-  const initials = user.full_name.split(' ').map(n => n[0]).join('').toUpperCase();
-  document.getElementById('userAvatar').textContent = initials;
-  document.getElementById('dropdownName').textContent = user.full_name;
-}
+    // ---- USER / AUTH ----
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user) window.location.href = 'Login.html';
 
-const currentPage = window.location.pathname.split('/').pop();
-document.querySelectorAll('.navbar-links a').forEach(link => {
-  if (link.getAttribute('href') === currentPage) link.classList.add('active');
-});
-
-function toggleDropdown() {
-  document.getElementById('avatarDropdown').classList.toggle('show');
-}
-
-document.addEventListener('click', function (e) {
-  const avatar = document.getElementById('userAvatar');
-  const dropdown = document.getElementById('avatarDropdown');
-  if (!avatar.contains(e.target) && !dropdown.contains(e.target)) {
-    dropdown.classList.remove('show');
-  }
-});
-
-function logout() {
-  localStorage.removeItem('user');
-  window.location.href = 'Index.html';
-}
-
-// ---- CALENDAR STATE ----
-let currentDate = new Date();
-let events = [];
-let selectedEventId = null; // tracks which event is open in detail modal
-
-// ---- CONSTANTS ----
-const typeLabels = {
-  interview: 'Interview',
-  deadline:  'Deadline',
-  followup:  'Follow-up',
-  offer:     'Offer',
-  other:     'Other'
-};
-
-const pillClass = {
-  interview: 'pill-interview',
-  deadline:  'pill-deadline',
-  followup:  'pill-followup',
-  offer:     'pill-offer',
-  other:     'pill-other'
-};
-
-const tagColors = {
-  interview: 'background:#d9f7df; color:#267a38;',
-  deadline:  'background:#ffe0e0; color:#b33939;',
-  followup:  'background:#fff4cc; color:#8a6d1d;',
-  offer:     'background:#d9ecff; color:#0d5ea8;',
-  other:     'background:#e5dcff; color:#5c3fa3;'
-};
-
-// ---- FETCH EVENTS ----
-async function loadEvents() {
-  try {
-    const response = await fetch(`http://localhost:3000/api/calendar/events?user_id=${user.id}`);
-    if (!response.ok) throw new Error('Failed to fetch events');
-    events = await response.json();
-  } catch (err) {
-    console.error('Could not load events:', err);
-  }
-  renderCalendar();
-}
-
-// ---- RENDER CALENDAR ----
-function renderCalendar() {
-  const year = currentDate.getFullYear();
-  const month = currentDate.getMonth();
-  const today = new Date();
-
-  document.getElementById('calMonthYear').textContent =
-    currentDate.toLocaleString('default', { month: 'long', year: 'numeric' });
-
-  const firstDay = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const daysInPrev = new Date(year, month, 0).getDate();
-
-  const tbody = document.getElementById('calBody');
-  tbody.innerHTML = '';
-
-  let day = 1, nextDay = 1;
-  let prevDay = daysInPrev - firstDay + 1;
-
-  for (let row = 0; row < 6; row++) {
-    const tr = document.createElement('tr');
-    for (let col = 0; col < 7; col++) {
-      const td = document.createElement('td');
-
-      if (row === 0 && col < firstDay) {
-        td.classList.add('other-month');
-        td.innerHTML = `<div class="day-num">${prevDay}</div>`;
-        prevDay++;
-      } else if (day > daysInMonth) {
-        td.classList.add('other-month');
-        td.innerHTML = `<div class="day-num">${nextDay}</div>`;
-        nextDay++;
-      } else {
-        const mm = String(month + 1).padStart(2, '0');
-        const dd = String(day).padStart(2, '0');
-        const cellDate = `${year}-${mm}-${dd}`;
-
-        const isToday = day === today.getDate() &&
-          month === today.getMonth() &&
-          year === today.getFullYear();
-
-        if (isToday) td.classList.add('today');
-
-        const dayEvents = events.filter(e => e.date === cellDate);
-        let html = `<div class="day-num">${day}</div>`;
-        dayEvents.forEach(ev => {
-          // each pill is now clickable and opens the detail modal
-          html += `<div class="event-pill ${pillClass[ev.type]}" onclick="openDetailModal(${ev.id})">${ev.title}</div>`;
-        });
-        td.innerHTML = html;
-        day++;
-      }
-      tr.appendChild(td);
+    if (user && user.full_name) {
+      const initials = user.full_name.split(' ').map(n => n[0]).join('').toUpperCase();
+      document.getElementById('userAvatar').textContent = initials;
+      document.getElementById('dropdownName').textContent = user.full_name;
     }
-    tbody.appendChild(tr);
-    if (day > daysInMonth && row >= 3) break;
-  }
 
-  renderSidePanel();
-}
-
-// ---- RENDER SIDE PANEL ----
-function renderSidePanel() {
-  const today = new Date();
-  const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
-
-  const todayEvs = events.filter(e => e.date === todayStr);
-  const todayEl = document.getElementById('todayEvents');
-  todayEl.innerHTML = todayEvs.length === 0
-    ? '<p style="color:#aaa; font-size:13px;">No events today.</p>'
-    : todayEvs.map(e => `
-        <div class="event-item" onclick="openDetailModal(${e.id})" style="cursor:pointer;">
-          <div class="event-item-title">${e.title}</div>
-          <div class="event-item-meta">
-            <span class="event-tag" style="${tagColors[e.type]}">${typeLabels[e.type]}</span>
-            ${e.time ? '· ' + formatTime(e.time) : ''}
-          </div>
-        </div>`).join('');
-
-  const upcoming = events
-    .filter(e => e.date > todayStr)
-    .sort((a, b) => a.date.localeCompare(b.date))
-    .slice(0, 5);
-
-  const upcomingEl = document.getElementById('upcomingEvents');
-  upcomingEl.innerHTML = upcoming.length === 0
-    ? '<p style="color:#aaa; font-size:13px;">No upcoming events.</p>'
-    : upcoming.map(e => `
-        <div class="event-item" onclick="openDetailModal(${e.id})" style="cursor:pointer;">
-          <div class="event-item-title">${e.title}</div>
-          <div class="event-item-meta">
-            <span class="event-tag" style="${tagColors[e.type]}">${typeLabels[e.type]}</span>
-            · ${formatDate(e.date)}${e.time ? ' · ' + formatTime(e.time) : ''}
-          </div>
-        </div>`).join('');
-}
-
-// ---- DETAIL MODAL (Edit / Delete) ----
-function openDetailModal(id) {
-  const ev = events.find(e => e.id === id);
-  if (!ev) return;
-
-  selectedEventId = id;
-
-  // Pre-fill the edit fields
-  document.getElementById('editTitle').value = ev.title;
-  document.getElementById('editDate').value  = ev.date;
-  document.getElementById('editTime').value  = ev.time || '';
-  document.getElementById('editType').value  = ev.type;
-
-  document.getElementById('detailModal').classList.add('show');
-}
-
-function closeDetailModal() {
-  selectedEventId = null;
-  document.getElementById('detailModal').classList.remove('show');
-}
-
-// ---- UPDATE EVENT ----
-async function updateEvent() {
-  const title = document.getElementById('editTitle').value.trim();
-  const date  = document.getElementById('editDate').value;
-  const time  = document.getElementById('editTime').value;
-  const type  = document.getElementById('editType').value;
-
-  if (!title || !date) {
-    alert('Title and date are required.');
-    return;
-  }
-
-  try {
-    const res = await fetch(`http://localhost:3000/api/calendar/events/${selectedEventId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, date, time, type })
+    const currentPage = window.location.pathname.split('/').pop();
+    document.querySelectorAll('.navbar-links a').forEach(link => {
+      if (link.getAttribute('href') === currentPage) link.classList.add('active');
     });
 
-    if (!res.ok) throw new Error('Update failed');
+    function toggleDropdown() {
+      document.getElementById('avatarDropdown').classList.toggle('show');
+    }
 
-    // Update locally so the page refreshes instantly
-    const idx = events.findIndex(e => e.id === selectedEventId);
-    events[idx] = { ...events[idx], title, date, time, type };
-
-    closeDetailModal();
-    renderCalendar();
-  } catch (err) {
-    console.error(err);
-    alert('Failed to update event.');
-  }
-}
-
-// ---- DELETE EVENT ----
-async function deleteEvent() {
-  if (!confirm('Are you sure you want to delete this event?')) return;
-
-  try {
-    const res = await fetch(`http://localhost:3000/api/calendar/events/${selectedEventId}`, {
-      method: 'DELETE'
+    document.addEventListener('click', function (e) {
+      const avatar = document.getElementById('userAvatar');
+      const dropdown = document.getElementById('avatarDropdown');
+      if (!avatar.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.remove('show');
+      }
     });
 
-    if (!res.ok) throw new Error('Delete failed');
+    function logout() {
+      localStorage.removeItem('user');
+      window.location.href = 'Login.html';
+    }
 
-    // Remove from local array
-    events = events.filter(e => e.id !== selectedEventId);
+    // ---- CALENDAR STATE ----
+    let currentDate = new Date();
+    let events = [];
+    let selectedEventId = null;
 
-    closeDetailModal();
-    renderCalendar();
-  } catch (err) {
-    console.error(err);
-    alert('Failed to delete event.');
-  }
-}
+    // ---- CONSTANTS ----
+    const typeLabels = {
+      interview: 'Interview',
+      deadline: 'Deadline',
+      followup: 'Follow-up',
+      offer: 'Offer',
+      other: 'Other'
+    };
 
-// ---- HELPERS ----
-function formatDate(dateStr) {
-  const d = new Date(dateStr + 'T00:00:00');
-  return d.toLocaleString('default', { month: 'short', day: 'numeric' });
-}
+    const pillClass = {
+      interview: 'pill-interview',
+      deadline: 'pill-deadline',
+      followup: 'pill-followup',
+      offer: 'pill-offer',
+      other: 'pill-other'
+    };
 
-function formatTime(timeStr) {
-  const [h, m] = timeStr.split(':');
-  const d = new Date();
-  d.setHours(h, m);
-  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-}
+    const tagColors = {
+      interview: 'background:#d9f7df; color:#267a38;',
+      deadline: 'background:#ffe0e0; color:#b33939;',
+      followup: 'background:#fff4cc; color:#8a6d1d;',
+      offer: 'background:#d9ecff; color:#0d5ea8;',
+      other: 'background:#e5dcff; color:#5c3fa3;'
+    };
 
-function changeMonth(dir) {
-  currentDate.setMonth(currentDate.getMonth() + dir);
-  renderCalendar();
-}
+    // ---- FETCH EVENTS ----
+    async function loadEvents() {
+      try {
+        const response = await fetch(`http://localhost:3000/api/calendar/events?user_id=${user.id}`);
+        if (!response.ok) throw new Error('Failed to fetch events');
+        events = await response.json();
+      } catch (err) {
+        console.error('Could not load events:', err);
+      }
+      renderCalendar();
+    }
 
-// ---- ADD EVENT MODAL ----
-function openAddEvent() {
-  document.getElementById('addEventModal').classList.add('show');
-}
+    // ---- RENDER CALENDAR ----
+    function renderCalendar() {
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      const today = new Date();
 
-function closeAddEvent() {
-  document.getElementById('addEventModal').classList.remove('show');
-  document.getElementById('eventTitle').value = '';
-  document.getElementById('eventDate').value  = '';
-  document.getElementById('eventTime').value  = '';
-  document.getElementById('eventType').value  = 'interview';
-}
+      document.getElementById('calMonthYear').textContent =
+        currentDate.toLocaleString('default', { month: 'long', year: 'numeric' });
 
-async function saveEvent() {
-  const title = document.getElementById('eventTitle').value.trim();
-  const date  = document.getElementById('eventDate').value;
-  const time  = document.getElementById('eventTime').value;
-  const type  = document.getElementById('eventType').value;
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const daysInPrev = new Date(year, month, 0).getDate();
 
-  if (!title || !date) {
-    alert('Title and date are required.');
-    return;
-  }
+      const tbody = document.getElementById('calBody');
+      tbody.innerHTML = '';
 
-  try {
-    const res = await fetch('http://localhost:3000/api/calendar/events', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_id: user.id, title, date, time, type })
-    });
+      let day = 1, nextDay = 1;
+      let prevDay = daysInPrev - firstDay + 1;
 
-    if (!res.ok) throw new Error('Save failed');
-    const saved = await res.json();
-    events.push(saved);
-    closeAddEvent();
-    renderCalendar();
-  } catch (err) {
-    console.error(err);
-    alert('Failed to save event.');
-  }
-}
+      for (let row = 0; row < 6; row++) {
+        const tr = document.createElement('tr');
+        for (let col = 0; col < 7; col++) {
+          const td = document.createElement('td');
 
-// ---- INIT ----
-loadEvents();
+          if (row === 0 && col < firstDay) {
+            td.classList.add('other-month');
+            td.innerHTML = `<div class="day-num">${prevDay}</div>`;
+            prevDay++;
+          } else if (day > daysInMonth) {
+            td.classList.add('other-month');
+            td.innerHTML = `<div class="day-num">${nextDay}</div>`;
+            nextDay++;
+          } else {
+            const mm = String(month + 1).padStart(2, '0');
+            const dd = String(day).padStart(2, '0');
+            const cellDate = `${year}-${mm}-${dd}`;
+
+            const isToday = day === today.getDate() &&
+              month === today.getMonth() &&
+              year === today.getFullYear();
+
+            if (isToday) td.classList.add('today');
+
+            const dayEvents = events.filter(e => e.date === cellDate);
+            let html = `<div class="day-num">${day}</div>`;
+            dayEvents.forEach(ev => {
+              html += `<div class="event-pill ${pillClass[ev.type]}" onclick="openDetailModal(${ev.id})">${ev.title}</div>`;
+            });
+            td.innerHTML = html;
+            day++;
+          }
+          tr.appendChild(td);
+        }
+        tbody.appendChild(tr);
+        if (day > daysInMonth && row >= 3) break;
+      }
+
+      renderSidePanel();
+    }
+
+    // ---- RENDER SIDE PANEL ----
+    function renderSidePanel() {
+      const today = new Date();
+      const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+      const todayEvs = events.filter(e => e.date === todayStr);
+      const todayEl = document.getElementById('todayEvents');
+      todayEl.innerHTML = todayEvs.length === 0
+        ? '<p style="color:#aaa; font-size:13px;">No events today.</p>'
+        : todayEvs.map(e => `
+            <div class="event-item" onclick="openDetailModal(${e.id})" style="cursor:pointer;">
+              <div class="event-item-title">${e.title}</div>
+              <div class="event-item-meta">
+                <span class="event-tag" style="${tagColors[e.type]}">${typeLabels[e.type]}</span>
+                ${e.time ? '· ' + formatTime(e.time) : ''}
+              </div>
+            </div>`).join('');
+
+      const upcoming = events
+        .filter(e => e.date > todayStr)
+        .sort((a, b) => a.date.localeCompare(b.date))
+        .slice(0, 5);
+
+      const upcomingEl = document.getElementById('upcomingEvents');
+      upcomingEl.innerHTML = upcoming.length === 0
+        ? '<p style="color:#aaa; font-size:13px;">No upcoming events.</p>'
+        : upcoming.map(e => `
+            <div class="event-item" onclick="openDetailModal(${e.id})" style="cursor:pointer;">
+              <div class="event-item-title">${e.title}</div>
+              <div class="event-item-meta">
+                <span class="event-tag" style="${tagColors[e.type]}">${typeLabels[e.type]}</span>
+                · ${formatDate(e.date)}${e.time ? ' · ' + formatTime(e.time) : ''}
+              </div>
+            </div>`).join('');
+    }
+
+    // ---- DETAIL MODAL ----
+    function openDetailModal(id) {
+      const ev = events.find(e => e.id === id);
+      if (!ev) return;
+      selectedEventId = id;
+      document.getElementById('editTitle').value = ev.title;
+      document.getElementById('editDate').value = ev.date;
+      document.getElementById('editTime').value = ev.time || '';
+      document.getElementById('editType').value = ev.type;
+      document.getElementById('detailModal').classList.add('show');
+    }
+
+    function closeDetailModal() {
+      selectedEventId = null;
+      document.getElementById('detailModal').classList.remove('show');
+    }
+
+    // ---- UPDATE EVENT ----
+    async function updateEvent() {
+      const title = document.getElementById('editTitle').value.trim();
+      const date = document.getElementById('editDate').value;
+      const time = document.getElementById('editTime').value;
+      const type = document.getElementById('editType').value;
+
+      if (!title || !date) { alert('Title and date are required.'); return; }
+
+      try {
+        const res = await fetch(`http://localhost:3000/api/calendar/events/${selectedEventId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, date, time, type })
+        });
+        if (!res.ok) throw new Error('Update failed');
+        const idx = events.findIndex(e => e.id === selectedEventId);
+        events[idx] = { ...events[idx], title, date, time, type };
+        closeDetailModal();
+        renderCalendar();
+      } catch (err) {
+        console.error(err);
+        alert('Failed to update event.');
+      }
+    }
+
+    // ---- DELETE EVENT ----
+    async function deleteEvent() {
+      if (!confirm('Are you sure you want to delete this event?')) return;
+      try {
+        const res = await fetch(`http://localhost:3000/api/calendar/events/${selectedEventId}`, {
+          method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Delete failed');
+        events = events.filter(e => e.id !== selectedEventId);
+        closeDetailModal();
+        renderCalendar();
+      } catch (err) {
+        console.error(err);
+        alert('Failed to delete event.');
+      }
+    }
+
+    // ---- HELPERS ----
+    function formatDate(dateStr) {
+      const d = new Date(dateStr + 'T00:00:00');
+      return d.toLocaleString('default', { month: 'short', day: 'numeric' });
+    }
+
+    function formatTime(timeStr) {
+      const [h, m] = timeStr.split(':');
+      const d = new Date();
+      d.setHours(h, m);
+      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function changeMonth(dir) {
+      currentDate.setMonth(currentDate.getMonth() + dir);
+      renderCalendar();
+    }
+
+    // ---- ADD EVENT MODAL ----
+    function openAddEvent() {
+      document.getElementById('addEventModal').classList.add('show');
+    }
+
+    function closeAddEvent() {
+      document.getElementById('addEventModal').classList.remove('show');
+      document.getElementById('eventTitle').value = '';
+      document.getElementById('eventDate').value = '';
+      document.getElementById('eventTime').value = '';
+      document.getElementById('eventType').value = 'interview';
+    }
+
+    async function saveEvent() {
+      const title = document.getElementById('eventTitle').value.trim();
+      const date = document.getElementById('eventDate').value;
+      const time = document.getElementById('eventTime').value;
+      const type = document.getElementById('eventType').value;
+
+      if (!title || !date) { alert('Title and date are required.'); return; }
+
+      try {
+        const res = await fetch('http://localhost:3000/api/calendar/events', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: user.id, title, date, time, type })
+        });
+        if (!res.ok) throw new Error('Save failed');
+        const saved = await res.json();
+        events.push(saved);
+        closeAddEvent();
+        renderCalendar();
+      } catch (err) {
+        console.error(err);
+        alert('Failed to save event.');
+      }
+    }
+
+    // ---- INIT ----
+    loadEvents();
   </script>
 </body>
+
 </html>

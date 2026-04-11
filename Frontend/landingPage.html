@@ -1,119 +1,275 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Track and manage all your job and internship applications in one place." />
   <title>JobTrack - Home</title>
   <link rel="stylesheet" href="Styles.css">
-  <style>
-    .landing {
-      text-align: center;
-      padding: 80px 20px;
-      color: white;
-    }
 
-    .landing h1 {
-      font-size: 48px;
-      margin-bottom: 20px;
-    }
-
-    .landing p {
-      font-size: 18px;
-      max-width: 700px;
-      margin: 0 auto 40px;
-      color: rgba(255,255,255,0.85);
-    }
-
-    .landing-buttons {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-
-    .landing-buttons a {
-      padding: 14px 24px;
-      border-radius: 12px;
-      text-decoration: none;
-      font-weight: bold;
-      font-size: 16px;
-      transition: 0.2s;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #2563eb, #1d4ed8);
-      color: white;
-      box-shadow: 0 10px 20px rgba(37,99,235,0.3);
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-2px);
-    }
-
-    .btn-secondary {
-      background: white;
-      color: #1e3a8a;
-    }
-
-    .features-section {
-      margin-top: 80px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      padding: 0 40px;
-    }
-
-    .feature-box {
-      background: rgba(255,255,255,0.08);
-      border-radius: 16px;
-      padding: 20px;
-      color: white;
-    }
-
-    .feature-box h3 {
-      margin-bottom: 10px;
-    }
-  </style>
 </head>
 
-<body>
-  <div class="landing">
-    <h1>
-  <img src="JobTrackLogo.png" alt="JobTrack Logo" style="height: 60px; vertical-align: middle;" />
-  JobTrack
-</h1>
+<body class="dark-mode">
 
-    <p>
-      Track and manage all your job and internship applications in one place.
-      Stay organized, update statuses, and never lose track of your opportunities.
-    </p>
-
-    <div class="landing-buttons">
-      <a href="Index.html" class="btn-primary">Login</a>
-      <a href="register.html" class="btn-secondary">Register</a>
+  <nav class="navbar">
+    <div class="navbar-left">
+      <a href="landing.html" class="navbar-logo">
+        <img src="JobTrackLogo.png" alt="JobTrack" style="height: 48px;" />
+      </a>
     </div>
+    <div class="navbar-right">
+      <a href="Login.html" class="action-btn action-secondary">Log in</a>
+      <a href="Registeration.html" class="action-btn action-primary">Sign up free</a>
+    </div>
+  </nav>
 
-    <div class="features-section">
-      <div class="feature-box">
-        <h3>🔐 Secure Login</h3>
-        <p>Safely access your account from anywhere.</p>
+  <!-- HERO -->
+  <section class="landing-hero">
+    <div class="hero-badge">✦ Free to use &nbsp;·&nbsp; No credit card required</div>
+    <h1>Never lose track of a<br>job application again</h1>
+    <p>
+      Organize every application, update statuses in real time, and stay focused
+      on what matters — landing the role.
+    </p>
+    <div class="hero-ctas">
+      <a href="Registeration.html" class="action-btn action-primary">Get started free</a>
+      <a href="Login.html" class="action-btn action-secondary">Log in to your account</a>
+    </div>
+  </section>
+
+  <!-- APP PREVIEW -->
+  <div class="preview-section">
+    <div class="preview-header">
+      <span>My Applications</span>
+      <small>5 active</small>
+    </div>
+    <div class="preview-body">
+      <div class="preview-cols">
+        <span>Company</span>
+        <span>Role</span>
+        <span>Status</span>
       </div>
-
-      <div class="feature-box">
-        <h3>📊 Track Applications</h3>
-        <p>Keep all job applications organized in one place.</p>
+      <div class="preview-row">
+        <span class="preview-company">Stripe</span>
+        <span class="preview-role">Software Engineer Intern</span>
+        <span class="status-badge interviewing">Interviewing</span>
       </div>
-
-      <div class="feature-box">
-        <h3>📈 Status Updates</h3>
-        <p>Track progress from Applied to Offer or Rejected.</p>
+      <div class="preview-row">
+        <span class="preview-company">Figma</span>
+        <span class="preview-role">Product Design Intern</span>
+        <span class="status-badge interested">Interested</span>
       </div>
-
-      <div class="feature-box">
-        <h3>🔎 Search & Filter</h3>
-        <p>Quickly find applications by company or role.</p>
+      <div class="preview-row">
+        <span class="preview-company">Notion</span>
+        <span class="preview-role">Frontend Engineer</span>
+        <span class="status-badge offer">Offer ✓</span>
+      </div>
+      <div class="preview-row">
+        <span class="preview-company">Dropbox</span>
+        <span class="preview-role">Data Analyst</span>
+        <span class="status-badge applied">Applied</span>
+      </div>
+      <div class="preview-row">
+        <span class="preview-company">Linear</span>
+        <span class="preview-role">Growth Intern</span>
+        <span class="status-badge rejected">Rejected</span>
       </div>
     </div>
   </div>
+
+  <!-- STATS -->
+  <div class="landing-section">
+    <div class="stats-bar">
+      <div class="stat-item">
+        <div class="stat-number">10,000+</div>
+        <div class="stat-label">Applications tracked</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">2,500+</div>
+        <div class="stat-label">Students &amp; job seekers</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">94%</div>
+        <div class="stat-label">Stay more organized</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div class="landing-section">
+    <p class="section-heading">How it works</p>
+    <h2 class="section-title">Up and running in minutes</h2>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-number">1</div>
+        <h3>Create your account</h3>
+        <p>Sign up for free in seconds. No credit card or setup required — just an email and password.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">2</div>
+        <h3>Add your applications</h3>
+        <p>Log each job with the company, role, date applied, and current status. Use Quick Add to do it fast.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">3</div>
+        <h3>Track your progress</h3>
+        <p>Update statuses as you move through interviews and offers. Your dashboard shows everything at a glance.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <div class="landing-section">
+    <p class="section-heading">Features</p>
+    <h2 class="section-title">Everything you need</h2>
+    <div class="features-grid">
+      <div class="feature-box">
+        <h3>🔐 Secure Login</h3>
+        <p>Safely access your account from anywhere. Your data is private and protected.</p>
+      </div>
+      <div class="feature-box">
+        <h3>📊 Track Applications</h3>
+        <p>Keep all job applications organized in one place with a clean, easy-to-read dashboard.</p>
+      </div>
+      <div class="feature-box">
+        <h3>📈 Status Updates</h3>
+        <p>Track progress from Interested → Applied → Interviewing → Offer or Rejected.</p>
+      </div>
+      <div class="feature-box">
+        <h3>🔎 Search &amp; Filter</h3>
+        <p>Quickly find applications by company name, role, or status in seconds.</p>
+      </div>
+      <div class="feature-box">
+        <h3>📅 Interview Calendar</h3>
+        <p>Schedule and view upcoming interviews on a built-in calendar so you never miss a date.</p>
+      </div>
+      <div class="feature-box">
+        <h3>📋 Quick Add</h3>
+        <p>Add a new job application in under 10 seconds with the Quick Add button on your dashboard.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TESTIMONIALS -->
+  <div class="landing-section">
+    <p class="section-heading">Testimonials</p>
+    <h2 class="section-title">What users are saying</h2>
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"JobTrack kept me sane during my internship search. I was applying to 10+ companies
+          a week and this was the only way I stayed organized."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">AK</div>
+          <div>
+            <div class="author-name">Aisha K.</div>
+            <div class="author-title">CS Student, University of Michigan</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"I used to track everything in a messy spreadsheet. JobTrack is so much cleaner and
+          the status badges make it easy to see where I stand."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">MR</div>
+          <div>
+            <div class="author-name">Marcus R.</div>
+            <div class="author-title">Recent Graduate, Software Engineer</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"The interview calendar is a game changer. I had 6 interviews in one week and never
+          missed a single one thanks to JobTrack."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">SL</div>
+          <div>
+            <div class="author-name">Sofia L.</div>
+            <div class="author-title">Product Design Intern, Figma</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="landing-section">
+    <p class="section-heading">FAQ</p>
+    <h2 class="section-title">Common questions</h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          Is JobTrack free to use?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">Yes, JobTrack is completely free. Create an account and start tracking your applications
+          with no hidden fees or credit card required.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          How do I add a job application?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">Once logged in, click the "Quick Add Job" button on your dashboard. Fill in the company
+          name, role, date applied, and status — it takes under 10 seconds.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          What statuses can I track?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">You can track five statuses: Interested, Applied, Interviewing, Offer, and Rejected.
+          Update them anytime as your application progresses.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          Can I track internships as well as full-time roles?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">Absolutely. JobTrack works for any type of opportunity — internships, co-ops, part-time
+          roles, full-time positions, and more.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          Is my data private?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">Yes. Your application data is tied to your account and is only visible to you. We do not
+          share or sell your data.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA BANNER -->
+  <div class="cta-banner">
+    <div class="cta-inner">
+      <h2>Ready to take control of your job search?</h2>
+      <p>Join thousands of students and graduates who stay organized with JobTrack.</p>
+      <a href="Registeration.html" class="action-btn action-primary">Create your free account</a>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="landing-footer">
+    &copy; 2025 JobTrack &nbsp;·&nbsp; Built to help you land the role.
+  </footer>
+
+  <script>
+    const savedTheme = localStorage.getItem('jt-theme') || 'dark';
+    document.body.classList.remove('dark-mode', 'light-mode');
+    document.body.classList.add(savedTheme === 'light' ? 'light-mode' : 'dark-mode');
+
+    function toggleFaq(btn) {
+      const item = btn.closest('.faq-item');
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    }
+  </script>
+
 </body>
+
 </html>

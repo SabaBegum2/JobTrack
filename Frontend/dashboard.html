@@ -1,440 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>JobTrack - Dashboard</title>
   <link rel="stylesheet" href="Styles.css" />
-  <style>
-    .dashboard-body {
-      display: block;
-      background: #f4f7fb;
-      padding: 0;
-      min-height: 100vh;
-    }
-
-    .dashboard-wrapper {
-      max-width: 1250px;
-      margin: 30px auto;
-      padding: 0 20px 40px;
-    }
-
-    /* TOP ROW */
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 24px;
-      margin-bottom: 24px;
-    }
-
-    .welcome-card,
-    .side-card,
-    .stat-card,
-    .dashboard-section {
-      background: white;
-      border-radius: 20px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-    }
-
-    .welcome-card { padding: 30px; }
-
-    .welcome-card h1 {
-      font-size: 32px;
-      color: #1a2340;
-      margin-bottom: 10px;
-    }
-
-    .welcome-card p {
-      color: #667085;
-      font-size: 16px;
-      margin-bottom: 20px;
-      line-height: 1.6;
-    }
-
-    .welcome-actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .action-btn {
-      display: inline-block;
-      padding: 12px 18px;
-      border-radius: 12px;
-      font-weight: 600;
-      text-decoration: none;
-      font-size: 14px;
-      transition: 0.2s ease;
-      cursor: pointer;
-      border: none;
-    }
-
-    .action-primary { background: #2d5be3; color: white; }
-    .action-primary:hover { background: #1f47c8; }
-    .action-secondary { background: #eef3ff; color: #2d5be3; }
-    .action-secondary:hover { background: #dfe8ff; }
-    .action-success { background: #e7f8ed; color: #18794e; }
-    .action-success:hover { background: #d0f0db; }
-
-    .side-card { padding: 24px; }
-    .side-card h3 { font-size: 18px; color: #1a2340; margin-bottom: 16px; }
-
-    .progress-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
-      font-size: 14px;
-      color: #4a5670;
-    }
-
-    .progress-bar {
-      width: 100%;
-      height: 8px;
-      background: #e9eef5;
-      border-radius: 999px;
-      overflow: hidden;
-      margin-bottom: 14px;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: #2d5be3;
-      border-radius: 999px;
-      transition: width 0.6s ease;
-    }
-
-    /* STATS ROW — now 6 cards */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 18px;
-      margin-bottom: 24px;
-    }
-
-    .stat-card { padding: 22px; }
-
-    .stat-card h3 {
-      font-size: 13px;
-      color: #667085;
-      margin-bottom: 10px;
-      font-weight: 600;
-    }
-
-    .stat-card p {
-      font-size: 28px;
-      font-weight: 700;
-      color: #1a2340;
-      margin: 0;
-    }
-
-    .stat-card.accent-red p   { color: #c53030; }
-    .stat-card.accent-green p { color: #18794e; }
-    .stat-card.accent-blue p  { color: #2d5be3; }
-
-    /* SECONDARY STATS ROW */
-    .secondary-stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
-      margin-bottom: 24px;
-    }
-
-    .mini-stat-card {
-      background: white;
-      border-radius: 20px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-      padding: 20px 22px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .mini-stat-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      flex-shrink: 0;
-    }
-
-    .icon-blue   { background: #eef3ff; }
-    .icon-yellow { background: #fff8e1; }
-    .icon-green  { background: #e7f8ed; }
-
-    .mini-stat-info h4 {
-      font-size: 12px;
-      color: #667085;
-      font-weight: 600;
-      margin: 0 0 4px;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-    }
-
-    .mini-stat-info p {
-      font-size: 18px;
-      font-weight: 700;
-      color: #1a2340;
-      margin: 0;
-    }
-
-    /* TWO COLUMN MIDDLE SECTION */
-    .middle-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
-      margin-bottom: 24px;
-    }
-
-    /* DONUT CHART */
-    .donut-wrapper {
-      display: flex;
-      align-items: center;
-      gap: 24px;
-      flex-wrap: wrap;
-    }
-
-    .donut-canvas-wrap { position: relative; flex-shrink: 0; }
-
-    .donut-legend {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      flex: 1;
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 13px;
-      color: #4a5670;
-    }
-
-    .legend-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    /* UPCOMING INTERVIEWS */
-    .interview-list { display: flex; flex-direction: column; gap: 12px; }
-
-    .interview-item {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 12px 14px;
-      border-radius: 12px;
-      background: #f8fbff;
-      border: 1px solid #e6eefc;
-    }
-
-    .interview-date-box {
-      background: #2d5be3;
-      color: white;
-      border-radius: 10px;
-      padding: 8px 12px;
-      text-align: center;
-      min-width: 48px;
-      flex-shrink: 0;
-    }
-
-    .interview-date-box .month {
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .interview-date-box .day {
-      font-size: 20px;
-      font-weight: 700;
-      line-height: 1.1;
-    }
-
-    .interview-info h4 {
-      font-size: 14px;
-      font-weight: 700;
-      color: #1a2340;
-      margin: 0 0 3px;
-    }
-
-    .interview-info p {
-      font-size: 12px;
-      color: #667085;
-      margin: 0;
-    }
-
-    .no-interviews {
-      color: #aaa;
-      font-size: 13px;
-      text-align: center;
-      padding: 20px 0;
-    }
-
-    /* RECENT APPLICATIONS */
-    .dashboard-section { padding: 24px; margin-bottom: 24px; }
-
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 18px;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .section-header h2 { font-size: 24px; color: #1a2340; margin: 0; }
-    .section-header a { text-decoration: none; color: #2d5be3; font-weight: 600; font-size: 14px; }
-
-    .applications-table { width: 100%; border-collapse: collapse; }
-
-    .applications-table th,
-    .applications-table td {
-      text-align: left;
-      padding: 14px 12px;
-      border-bottom: 1px solid #e9eef5;
-      font-size: 15px;
-    }
-
-    .applications-table th { color: #667085; font-weight: 600; }
-
-    /* EMPTY STATE */
-    .empty-state {
-      text-align: center;
-      padding: 40px 20px;
-      color: #667085;
-    }
-
-    .empty-state .empty-icon { font-size: 48px; margin-bottom: 14px; }
-    .empty-state h3 { font-size: 18px; color: #1a2340; margin-bottom: 8px; }
-    .empty-state p { font-size: 14px; margin-bottom: 20px; }
-
-    .status-badge {
-      display: inline-block;
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .status-applied    { background: #e8f1ff; color: #2457c5; }
-    .status-interview  { background: #fff4db; color: #9a6700; }
-    .status-offer      { background: #e7f8ed; color: #18794e; }
-    .status-rejected   { background: #fdecec; color: #c53030; }
-    .status-interested { background: #ede9fe; color: #6b46c1; }
-
-    /* QUICK ADD MODAL */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
-      z-index: 999;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal-overlay.show { display: flex; }
-
-    .modal-box {
-      background: white;
-      border-radius: 20px;
-      padding: 32px;
-      width: 100%;
-      max-width: 460px;
-      margin: 20px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-    }
-
-    .modal-box h2 { color: #1a2340; margin: 0 0 22px; font-size: 22px; }
-
-    .form-group { margin-bottom: 16px; }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 6px;
-      font-size: 13px;
-      font-weight: 600;
-      color: #334155;
-    }
-
-    .form-group input,
-    .form-group select {
-      width: 100%;
-      padding: 10px 14px;
-      border: 1px solid #dbe3ee;
-      border-radius: 10px;
-      background: #f8fafc;
-      font-size: 14px;
-      box-sizing: border-box;
-    }
-
-    .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
-
-    .modal-btn {
-      flex: 1;
-      padding: 12px;
-      border: none;
-      border-radius: 12px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .modal-btn-primary { background: #2d5be3; color: white; }
-    .modal-btn-primary:hover { background: #1f47c8; }
-    .modal-btn-cancel { background: #f1f5f9; color: #667085; }
-    .modal-btn-cancel:hover { background: #e2e8f0; }
-
-    /* TIPS */
-    .tips-list { display: grid; gap: 14px; }
-
-    .tip-card {
-      padding: 16px;
-      border-radius: 14px;
-      background: #f8fbff;
-      border: 1px solid #e6eefc;
-    }
-
-    .tip-card h4 { font-size: 15px; margin: 0 0 6px; color: #1a2340; }
-    .tip-card p  { margin: 0; font-size: 14px; color: #667085; line-height: 1.5; }
-
-    /* RESPONSIVE */
-    @media (max-width: 1100px) {
-      .dashboard-grid  { grid-template-columns: 1fr; }
-      .stats-grid      { grid-template-columns: repeat(3, 1fr); }
-      .middle-grid     { grid-template-columns: 1fr; }
-    }
-
-    @media (max-width: 700px) {
-      .stats-grid          { grid-template-columns: repeat(2, 1fr); }
-      .secondary-stats     { grid-template-columns: 1fr; }
-      .applications-table  { display: block; overflow-x: auto; }
-      .welcome-card h1     { font-size: 26px; }
-    }
-  </style>
-  <!-- Chart.js for donut -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="dashboard-body">
 
-  <!-- NAVBAR -->
+<body class="dashboard-page">
+
   <nav class="navbar">
     <div class="navbar-left">
-      <a href="dashboard.html" class="navbar-logo">
+      <a href="Dashboard.html" class="navbar-logo">
         <img src="../JobTrackLogo.png" alt="JobTrack" style="height: 70px;" />
       </a>
       <ul class="navbar-links">
-        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="Dashboard.html">Dashboard</a></li>
         <li><a href="Applications.html">Applications</a></li>
         <li><a href="Calendar.html">Calendar</a></li>
         <li><a href="Resources.html">Resources</a></li>
@@ -445,7 +28,7 @@
       <div class="avatar" id="userAvatar" onclick="toggleDropdown()">AS</div>
       <div class="dropdown" id="avatarDropdown">
         <div class="dropdown-name" id="dropdownName">User</div>
-        <hr style="border: none; border-top: 1px solid #eee; margin: 8px 0;">
+        <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 8px 0;">
         <a href="#" class="dropdown-item" onclick="logout()">Logout</a>
       </div>
     </div>
@@ -454,33 +37,41 @@
   <!-- DASHBOARD CONTENT -->
   <div class="dashboard-wrapper">
 
-    <!-- WELCOME + PROGRESS -->
-    <div class="dashboard-grid">
-      <div class="welcome-card">
+    <div class="topbar">
+      <div class="topbar-left">
         <h1 id="welcomeText">Welcome back!</h1>
-        <p>Keep track of your job applications, monitor your interview progress, and stay organized throughout your job search.</p>
-        <div class="welcome-actions">
-          <a href="Applications.html" class="action-btn action-primary">View Applications</a>
-          <a href="Resources.html" class="action-btn action-secondary">Career Resources</a>
-          <a href="Calendar.html" class="action-btn action-secondary">Open Calendar</a>
-          <button class="action-btn action-success" onclick="openQuickAdd()">+ Quick Add Job</button>
-        </div>
+        <p>Track your applications, monitor progress, and stay organized.</p>
       </div>
-
-      <div class="side-card">
-        <h3>Application Progress</h3>
-        <div class="progress-item"><span>Applied</span><span id="pct-applied">0%</span></div>
-        <div class="progress-bar"><div class="progress-fill" id="bar-applied" style="width:0%"></div></div>
-        <div class="progress-item"><span>Interviewing</span><span id="pct-interviewing">0%</span></div>
-        <div class="progress-bar"><div class="progress-fill" id="bar-interviewing" style="width:0%"></div></div>
-        <div class="progress-item"><span>Offers</span><span id="pct-offers">0%</span></div>
-        <div class="progress-bar"><div class="progress-fill" id="bar-offers" style="width:0%"></div></div>
-        <div class="progress-item"><span>Rejected</span><span id="pct-rejected">0%</span></div>
-        <div class="progress-bar"><div class="progress-fill" id="bar-rejected" style="width:0%; background:#c53030;"></div></div>
+      <div class="topbar-right">
+        <a href="Applications.html" class="action-btn action-secondary">Applications</a>
+        <a href="Resources.html" class="action-btn action-secondary">Resources</a>
+        <a href="Calendar.html" class="action-btn action-secondary">Calendar</a>
+        <button class="action-btn action-primary" onclick="openQuickAdd()">+ Quick Add Job</button>
       </div>
     </div>
 
-    <!-- MAIN STAT CARDS (6) -->
+    <!-- APPLICATION PROGRESS -->
+    <div class="side-card" style="margin-bottom: 24px;">
+      <h3>Application Progress</h3>
+      <div class="progress-item"><span>Applied</span><span id="pct-applied">0%</span></div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="bar-applied" style="width:0%"></div>
+      </div>
+      <div class="progress-item"><span>Interviewing</span><span id="pct-interviewing">0%</span></div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="bar-interviewing" style="width:0%"></div>
+      </div>
+      <div class="progress-item"><span>Offers</span><span id="pct-offers">0%</span></div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="bar-offers" style="width:0%"></div>
+      </div>
+      <div class="progress-item"><span>Rejected</span><span id="pct-rejected">0%</span></div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="bar-rejected" style="width:0%; background:#c53030;"></div>
+      </div>
+    </div>
+
+    <!-- MAIN STAT CARDS -->
     <div class="stats-grid">
       <div class="stat-card">
         <h3>Total Applications</h3>
@@ -508,7 +99,7 @@
       </div>
     </div>
 
-    <!-- SECONDARY STATS: streak, days since, rejection rate -->
+    <!-- SECONDARY STATS -->
     <div class="secondary-stats">
       <div class="mini-stat-card">
         <div class="mini-stat-icon icon-blue">📅</div>
@@ -535,19 +126,30 @@
 
     <!-- DONUT CHART + UPCOMING INTERVIEWS -->
     <div class="middle-grid">
-
       <div class="dashboard-section">
-        <div class="section-header"><h2>Status Breakdown</h2></div>
+        <div class="section-header">
+          <h2>Status Breakdown</h2>
+        </div>
         <div class="donut-wrapper">
           <div class="donut-canvas-wrap">
             <canvas id="donutChart" width="160" height="160"></canvas>
           </div>
           <div class="donut-legend">
-            <div class="legend-item"><div class="legend-dot" style="background:#2d5be3"></div> Applied</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div> Interviewing</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#18794e"></div> Offer</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#c53030"></div> Rejected</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#6b46c1"></div> Interested</div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#2d5be3"></div> Applied
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#f59e0b"></div> Interviewing
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#18794e"></div> Offer
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#c53030"></div> Rejected
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#6b46c1"></div> Interested
+            </div>
           </div>
         </div>
       </div>
@@ -561,7 +163,6 @@
           <p class="no-interviews">Loading...</p>
         </div>
       </div>
-
     </div>
 
     <!-- RECENT APPLICATIONS -->
@@ -570,18 +171,49 @@
         <h2>Recent Applications</h2>
         <a href="Applications.html">See all</a>
       </div>
-      <div id="recentAppsContainer">
-        <!-- filled by JS -->
+      <div id="recentAppsContainer"></div>
+    </div>
+
+    <!-- GOALS CARD -->
+    <div class="dashboard-section" id="goalsCard" style="display:none;">
+      <div class="section-header">
+        <h2>🎯 Your Goals</h2>
+      </div>
+      <div class="secondary-stats">
+        <div class="mini-stat-card">
+          <div class="mini-stat-icon icon-blue">📋</div>
+          <div class="mini-stat-info">
+            <h4>Weekly Target</h4>
+            <p id="goal-display-weekly">—</p>
+          </div>
+        </div>
+        <div class="mini-stat-card">
+          <div class="mini-stat-icon icon-green">💼</div>
+          <div class="mini-stat-info">
+            <h4>Target Role</h4>
+            <p id="goal-display-title">—</p>
+          </div>
+        </div>
+        <div class="mini-stat-card">
+          <div class="mini-stat-icon icon-yellow">🔍</div>
+          <div class="mini-stat-info">
+            <h4>Search Status</h4>
+            <p id="goal-display-status">—</p>
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- QUICK TIPS -->
     <div class="dashboard-section">
-      <div class="section-header"><h2>Quick Tips</h2></div>
+      <div class="section-header">
+        <h2>Quick Tips</h2>
+      </div>
       <div class="tips-list">
         <div class="tip-card">
           <h4>Tailor every application</h4>
-          <p>Customize your resume and cover letter for each role. Mirror keywords from the job description to pass ATS filters.</p>
+          <p>Customize your resume and cover letter for each role. Mirror keywords from the job description to pass ATS
+            filters.</p>
         </div>
         <div class="tip-card">
           <h4>Prepare your STAR stories</h4>
@@ -630,8 +262,12 @@
   </div>
 
   <script>
+    const savedTheme = localStorage.getItem('jt-theme') || 'dark';
+    if (savedTheme === 'light') document.body.classList.add('light-mode');
+    if (savedTheme === 'dark') document.body.classList.add('dark-mode');
+
     const user = JSON.parse(localStorage.getItem('user'));
-    if (!user) window.location.href = 'Index.html';
+    if (!user) window.location.href = 'Login.html';
 
     if (user?.full_name) {
       const initials = user.full_name.split(' ').map(n => n[0]).join('').toUpperCase();
@@ -640,7 +276,6 @@
       document.getElementById('welcomeText').textContent = `Welcome back, ${user.full_name}!`;
     }
 
-    // Set today's date as default for quick add
     document.getElementById('qa-date').value = new Date().toISOString().split('T')[0];
 
     // ---- DONUT CHART ----
@@ -648,38 +283,24 @@
 
     function renderDonut(stats) {
       const ctx = document.getElementById('donutChart').getContext('2d');
-      const data = [
-        stats.applied,
-        stats.interviewing,
-        stats.offers,
-        stats.rejected,
-        stats.interested || 0
-      ];
-
+      const data = [stats.applied, stats.interviewing, stats.offers, stats.rejected, stats.interested || 0];
       if (donutChart) donutChart.destroy();
-
-      // Show empty state if no data
       if (data.every(v => v === 0)) {
         ctx.clearRect(0, 0, 160, 160);
-        ctx.fillStyle = '#e9eef5';
-        ctx.beginPath();
-        ctx.arc(80, 80, 60, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = 'white';
-        ctx.beginPath();
-        ctx.arc(80, 80, 35, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.fillStyle = 'rgba(255,255,255,0.05)';
+        ctx.beginPath(); ctx.arc(80, 80, 60, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = 'rgba(255,255,255,0.02)';
+        ctx.beginPath(); ctx.arc(80, 80, 35, 0, Math.PI * 2); ctx.fill();
         return;
       }
-
       donutChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
           datasets: [{
             data,
-            backgroundColor: ['#2d5be3','#f59e0b','#18794e','#c53030','#6b46c1'],
+            backgroundColor: ['#2d5be3', '#f59e0b', '#18794e', '#c53030', '#6b46c1'],
             borderWidth: 2,
-            borderColor: '#fff'
+            borderColor: 'rgba(255,255,255,0.05)'
           }]
         },
         options: {
@@ -690,29 +311,26 @@
       });
     }
 
-    // ---- UPCOMING INTERVIEWS from calendar ----
+    // ---- UPCOMING INTERVIEWS ----
     async function loadUpcomingInterviews() {
       const container = document.getElementById('upcomingInterviews');
       try {
         const res = await fetch(`http://localhost:3000/api/calendar/events?user_id=${user.id}`);
         const events = await res.json();
-
         const today = new Date().toISOString().split('T')[0];
         const interviews = events
           .filter(e => e.type === 'interview' && e.date >= today)
           .sort((a, b) => a.date.localeCompare(b.date))
           .slice(0, 4);
-
         if (interviews.length === 0) {
           container.innerHTML = `<p class="no-interviews">No upcoming interviews scheduled.</p>`;
           return;
         }
-
         container.innerHTML = interviews.map(ev => {
           const d = new Date(ev.date + 'T00:00:00');
           const month = d.toLocaleString('default', { month: 'short' });
-          const day   = d.getDate();
-          const time  = ev.time ? formatTime(ev.time) : 'All day';
+          const day = d.getDate();
+          const time = ev.time ? formatTime(ev.time) : 'All day';
           return `
             <div class="interview-item">
               <div class="interview-date-box">
@@ -737,46 +355,70 @@
       return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
 
+    // ---- GOALS ----
+    async function loadGoals() {
+      try {
+        const res = await fetch(`http://localhost:3000/api/goals?userId=${user.id}`);
+        const goals = await res.json();
+        if (!goals || !goals.goal_weekly) return;
+
+        document.getElementById('goalsCard').style.display = 'block';
+
+        document.getElementById('goal-display-weekly').textContent =
+          goals.goal_weekly ? `${goals.goal_weekly} apps / week` : '—';
+
+        document.getElementById('goal-display-title').textContent =
+          goals.goal_title || '—';
+
+        const statusMap = {
+          'actively-looking': 'Actively Looking',
+          'open': 'Open to Opportunities',
+          'not-looking': 'Not Looking'
+        };
+        document.getElementById('goal-display-status').textContent =
+          statusMap[goals.goal_status] || '—';
+
+        if (goals.goal_weekly) {
+          const el = document.getElementById('week-streak');
+          const current = parseInt(el.textContent) || 0;
+          el.textContent = `${current} / ${goals.goal_weekly} this week`;
+        }
+      } catch (err) {
+        console.error('Failed to load goals:', err);
+      }
+    }
+
     // ---- MAIN DASHBOARD DATA ----
     async function loadDashboard() {
       try {
-        const res  = await fetch(`http://localhost:3000/api/dashboard?userId=${user.id}`);
+        const res = await fetch(`http://localhost:3000/api/dashboard?userId=${user.id}`);
         const data = await res.json();
-        const s    = data.stats;
-        const p    = data.progress;
+        const s = data.stats;
+        //const p = data.progress;
 
-        // Stat cards
-        document.getElementById('stat-total').textContent        = s.total;
-        document.getElementById('stat-applied').textContent      = s.applied;
-        document.getElementById('stat-interviewing').textContent  = s.interviewing;
-        document.getElementById('stat-offers').textContent       = s.offers;
-        document.getElementById('stat-rejected').textContent     = s.rejected || 0;
+        document.getElementById('stat-total').textContent = s.total;
+        document.getElementById('stat-applied').textContent = s.applied;
+        document.getElementById('stat-interviewing').textContent = s.interviewing;
+        document.getElementById('stat-offers').textContent = s.offers;
+        document.getElementById('stat-rejected').textContent = s.rejected || 0;
 
-        // Response rate = (interviewing + offers) / applied * 100
         const responded = (s.interviewing || 0) + (s.offers || 0);
         const responseRate = s.applied > 0 ? Math.round((responded / s.applied) * 100) : 0;
         document.getElementById('stat-response').textContent = responseRate + '%';
 
-        // Success rate = offers / total
         const successRate = s.total > 0 ? Math.round((s.offers / s.total) * 100) : 0;
         document.getElementById('success-rate').textContent = successRate + '%';
 
-        // Progress bars (including rejected)
-        setProgress('applied',      p.applied);
-        setProgress('interviewing', p.interviewing);
-        setProgress('offers',       p.offers);
-        const rejPct = s.total > 0 ? Math.round(((s.rejected || 0) / s.total) * 100) : 0;
-        setProgress('rejected', rejPct);
+        const total = s.total || 0;
+        setProgress('applied', total ? Math.round((s.applied / total) * 100) : 0);
+        setProgress('interviewing', total ? Math.round((s.interviewing / total) * 100) : 0);
+        setProgress('offers', total ? Math.round((s.offers / total) * 100) : 0);
+        setProgress('rejected', total ? Math.round(((s.rejected || 0) / total) * 100) : 0);
 
-        // Donut
         renderDonut(s);
-
-        // Recent apps table
         renderRecentApps(data.recent);
-
-        // Secondary stats from recent data
         computeSecondaryStats(data.recent);
-
+        loadGoals();
       } catch (err) {
         console.error('Dashboard load error:', err);
       }
@@ -784,34 +426,29 @@
 
     function setProgress(key, pct) {
       document.getElementById('pct-' + key).textContent = pct + '%';
-      document.getElementById('bar-' + key).style.width  = pct + '%';
+      document.getElementById('bar-' + key).style.width = pct + '%';
     }
 
     function computeSecondaryStats(recent) {
       if (!recent || recent.length === 0) {
-        document.getElementById('days-since').textContent  = 'No apps yet';
+        document.getElementById('days-since').textContent = 'No apps yet';
         document.getElementById('week-streak').textContent = '0 this week';
         return;
       }
-
-      // Days since last application
-      const latest   = new Date(recent[0].date);
-      const today    = new Date();
+      const latest = new Date(recent[0].date);
+      const today = new Date();
       const diffDays = Math.floor((today - latest) / (1000 * 60 * 60 * 24));
       document.getElementById('days-since').textContent =
         diffDays === 0 ? 'Today!' : diffDays === 1 ? 'Yesterday' : `${diffDays} days ago`;
-
-      // Applications this week
-      const weekAgo   = new Date();
+      const weekAgo = new Date();
       weekAgo.setDate(weekAgo.getDate() - 7);
-      const thisWeek  = recent.filter(a => new Date(a.date) >= weekAgo).length;
+      const thisWeek = recent.filter(a => new Date(a.date) >= weekAgo).length;
       document.getElementById('week-streak').textContent =
         thisWeek === 1 ? '1 this week' : `${thisWeek} this week`;
     }
 
     function renderRecentApps(recent) {
       const container = document.getElementById('recentAppsContainer');
-
       if (!recent || recent.length === 0) {
         container.innerHTML = `
           <div class="empty-state">
@@ -822,15 +459,13 @@
           </div>`;
         return;
       }
-
       const statusClass = {
-        'applied':      'status-applied',
+        'applied': 'status-applied',
         'interviewing': 'status-interview',
-        'offer':        'status-offer',
-        'rejected':     'status-rejected',
-        'interested':   'status-interested',
+        'offer': 'status-offer',
+        'rejected': 'status-rejected',
+        'interested': 'status-interested',
       };
-
       container.innerHTML = `
         <table class="applications-table">
           <thead>
@@ -861,33 +496,29 @@
     function closeQuickAdd() {
       document.getElementById('quickAddModal').classList.remove('show');
       document.getElementById('qa-company').value = '';
-      document.getElementById('qa-title').value   = '';
-      document.getElementById('qa-date').value    = new Date().toISOString().split('T')[0];
-      document.getElementById('qa-status').value  = 'applied';
+      document.getElementById('qa-title').value = '';
+      document.getElementById('qa-date').value = new Date().toISOString().split('T')[0];
+      document.getElementById('qa-status').value = 'applied';
     }
 
     async function submitQuickAdd() {
       const company = document.getElementById('qa-company').value.trim();
-      const title   = document.getElementById('qa-title').value.trim();
-      const date    = document.getElementById('qa-date').value;
-      const status  = document.getElementById('qa-status').value;
-
+      const title = document.getElementById('qa-title').value.trim();
+      const date = document.getElementById('qa-date').value;
+      const status = document.getElementById('qa-status').value;
       if (!company || !title || !date) {
         alert('Company, role, and date are required.');
         return;
       }
-
       try {
         const res = await fetch('http://localhost:3000/api/jobs', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ userId: user.id, company, title, date, status, notes: '' })
         });
-
         if (!res.ok) throw new Error('Failed to add job');
-
         closeQuickAdd();
-        loadDashboard(); // refresh all stats
+        loadDashboard();
       } catch (err) {
         console.error(err);
         alert('Failed to add job. Please try again.');
@@ -904,8 +535,8 @@
       document.getElementById('avatarDropdown').classList.toggle('show');
     }
 
-    document.addEventListener('click', function(e) {
-      const avatar   = document.getElementById('userAvatar');
+    document.addEventListener('click', function (e) {
+      const avatar = document.getElementById('userAvatar');
       const dropdown = document.getElementById('avatarDropdown');
       if (!avatar.contains(e.target) && !dropdown.contains(e.target)) {
         dropdown.classList.remove('show');
@@ -914,7 +545,7 @@
 
     function logout() {
       localStorage.removeItem('user');
-      window.location.href = 'Index.html';
+      window.location.href = 'Login.html';
     }
 
     // ---- INIT ----
@@ -922,4 +553,5 @@
     loadUpcomingInterviews();
   </script>
 </body>
+
 </html>

@@ -4,14 +4,17 @@ const cors = require('cors');
 const db = require('./db');
 require('dotenv').config();
 const crypto = require('crypto');
+//const emailRoutes = require('./emailRoutes'); 
+const emailScheduler = require('./emailScheduler');
+emailScheduler(db);
 
 const app = express();
 //app.use(cors());
 app.use(cors({
-  origin: 'http://127.0.0.1:5500'
+  origin: ['http://127.0.0.1:5500', 'http://localhost:5500']
 }));
 app.use(express.json());
- 
+
 
 // Register route
 app.post("/api/register", async (req, res) => {
@@ -60,65 +63,6 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// FORGOT PASSWORD
-app.post('/api/forgot-password', async (req, res) => {
-  const { email } = req.body;
-
-  if (!email) {
-    return res.status(400).json({ message: 'Email is required' });
-  }
-
-  try {
-    const [results] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
-
-    if (results.length === 0) {
-      return res.status(404).json({ message: 'Email not found' });
-    }
-
-    const token = crypto.randomBytes(32).toString('hex');
-    const expires_at = new Date(Date.now() + 1 * 60 * 60 * 1000);
-
-    await db.query(
-      'INSERT INTO password_resets (email, token, expires_at) VALUES (?, ?, ?)',
-      [email, token, expires_at]
-    );
-
-    res.json({ message: 'Reset token generated', token });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
-// RESET PASSWORD
-app.post('/api/reset-password', async (req, res) => {
-  const { token, new_password } = req.body;
-
-  if (!token || !new_password) {
-    return res.status(400).json({ message: 'Token and new password are required' });
-  }
-
-  try {
-    const [results] = await db.query(
-      'SELECT * FROM password_resets WHERE token = ? AND expires_at > NOW()',
-      [token]
-    );
-
-    if (results.length === 0) {
-      return res.status(400).json({ message: 'Invalid or expired token' });
-    }
-
-    const email = results[0].email;
-
-    await db.query('UPDATE users SET password = ? WHERE email = ?', [new_password, email]);
-    await db.query('DELETE FROM password_resets WHERE token = ?', [token]);
-
-    res.json({ message: 'Password reset successfully' });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
 
 // GET JOBS FOR USER
 app.get('/api/jobs/:userId', async (req, res) => {
@@ -152,13 +96,24 @@ app.post('/api/jobs', async (req, res) => {
   }
 });
 
-//DELETE A JOB
 app.delete('/api/jobs/:id', async (req, res) => {
+  const { id } = req.params;
   try {
-    await db.query('DELETE FROM jobs WHERE id = ?', [req.params.id]);
-    res.json({ message: 'Job deleted' });
+    await db.query('DELETE FROM jobs WHERE id = ?', [id]);
+    res.json({ success: true });
   } catch (err) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// DELETE all jobs for a user
+app.delete('/api/jobs/all/:userId', async (req, res) => {
+  const { userId } = req.params;
+  try {
+    await db.query('DELETE FROM jobs WHERE user_id = ?', [userId]);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -239,12 +194,22 @@ app.delete('/api/calendar/events/:id', async (req, res) => {
   }
 });
 
+// DELETE account
+app.delete('/api/users/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await db.query('DELETE FROM users WHERE id = ?', [id]);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // DASHBOARD
 app.get('/api/dashboard', async (req, res) => {
   try {
-    const userId = req.query.userId; // gets userId from URL: /api/dashboard?userId=1
+    const userId = req.query.userId;
 
-    // Get counts grouped by status
     const [rows] = await db.query(
       `SELECT status, COUNT(*) as count 
        FROM jobs 
@@ -253,24 +218,18 @@ app.get('/api/dashboard', async (req, res) => {
       [userId]
     );
 
-    // Build stats object
-    const stats = { total: 0, applied: 0, interviewing: 0, offers: 0 };
+    // ← add rejected and interested
+    const stats = { total: 0, applied: 0, interviewing: 0, offers: 0, rejected: 0, interested: 0 };
     rows.forEach(row => {
       const s = row.status.toLowerCase();
       stats.total += Number(row.count);
       if (s === 'applied')      stats.applied      += Number(row.count);
-      if (s === 'interviewing') stats.interviewing += Number(row.count);
-      if (s === 'offer')        stats.offers       += Number(row.count);
+      if (s === 'interviewing') stats.interviewing  += Number(row.count);
+      if (s === 'offer')        stats.offers        += Number(row.count);
+      if (s === 'rejected')     stats.rejected      += Number(row.count); // ← add
+      if (s === 'interested')   stats.interested    += Number(row.count); // ← add
     });
 
-    // Calculate percentages for progress bars
-    const progress = {
-      applied:      stats.total ? Math.round((stats.applied      / stats.total) * 100) : 0,
-      interviewing: stats.total ? Math.round((stats.interviewing / stats.total) * 100) : 0,
-      offers:       stats.total ? Math.round((stats.offers       / stats.total) * 100) : 0,
-    };
-
-    // Get 5 most recent jobs
     const [recent] = await db.query(
       `SELECT company, title, date, status 
        FROM jobs 
@@ -280,7 +239,7 @@ app.get('/api/dashboard', async (req, res) => {
       [userId]
     );
 
-    res.json({ stats, progress, recent });
+    res.json({ stats, recent });
 
   } catch (err) {
     console.error(err);
@@ -308,6 +267,139 @@ app.put('/api/users/:id/password', async (req, res) => {
   } catch (err) { res.status(500).json({ message: 'Server error' }); }
 });
 
+// FORGOT PASSWORD
+const nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false,
+  requireTLS: true,
+  auth: {
+    user: 'sababegum4432@gmail.com',
+    pass: 'kqdh zsey rhmj oqcy'  // paste your app password here (no spaces)
+  }
+});
+
+transporter.verify(function (error, success) {
+  if (error) {
+    console.log('Transporter error:', error);
+  } else {
+    console.log('Server is ready to send emails');
+  }
+});
+
+app.post('/api/forgot-password', async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const result = await db.query('SELECT * FROM users WHERE email = ?', [email]);
+    console.log('User found:', result[0]);
+
+    if (result[0].length === 0) {
+      return res.status(404).json({ message: 'Email not found.' });
+    }
+
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiry = new Date(Date.now() + 60 * 60 * 1000).toISOString().slice(0, 19).replace('T', ' ');
+    await db.query(
+      'UPDATE users SET reset_token = ?, reset_expiry = ? WHERE email = ?',
+      [token, expiry, email]
+    );
+
+    console.log('Sending email to:', email);
+
+    await transporter.sendMail({
+      from: 'sababegum4432@gmail.com',
+      to: email,
+      subject: 'JobTrack - Password Reset',
+      html: `
+        <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+          <h2 style="color: #0c3e54;">Reset Your Password</h2>
+          <p>You requested a password reset for your JobTrack account.</p>
+          <a href="http://localhost:5500/Frontend/resetPassword.html?token=${token}"
+            style="display: inline-block; padding: 12px 24px; background: #174e69; color: white; border-radius: 8px; text-decoration: none; font-weight: bold;">
+            Reset Password
+          </a>
+          <p style="margin-top: 24px; color: #64748b; font-size: 13px;">
+            This link expires in 1 hour. If you didn't request this, ignore this email.
+          </p>
+        </div>
+      `
+    });
+
+    console.log('Email sent successfully');
+
+    res.json({ message: 'Reset email sent.' });
+
+  } catch (err) {
+    console.error('Forgot password error:', err);
+    res.status(500).json({ message: 'Something went wrong. Please try again.' });
+  }
+});
+
+//RESET PASSWORD
+app.post('/api/reset-password', async (req, res) => {
+  const { token, new_password } = req.body;
+  console.log('Reset password attempt with token:', token);
+
+  try {
+    const [rows] = await db.query(
+      'SELECT * FROM users WHERE reset_token = ? AND reset_expiry > NOW()',
+      [token]
+    );
+    console.log('Token lookup result:', rows);
+
+    if (rows.length === 0) {
+      return res.status(400).json({ message: 'Invalid or expired token.' });
+    }
+
+    await db.query(
+      'UPDATE users SET password = ?, reset_token = NULL, reset_expiry = NULL WHERE reset_token = ?',
+      [new_password, token]
+    );
+
+    res.json({ message: 'Password reset successful.' });
+
+  } catch (err) {
+    console.error('Reset password error:', err);
+    res.status(500).json({ message: 'Something went wrong. Please try again.' });
+  }
+});
+
+
+// SETTING GOALS
+app.get('/api/goals', async (req, res) => {
+  const { userId } = req.query;
+  try {
+    const [rows] = await db.query(
+      'SELECT goal_weekly, goal_title, goal_industry, goal_status FROM user_goals WHERE user_id = ?',
+      [userId]
+    );
+    res.json(rows[0] || {});
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// SAVE goals (upsert — creates row if it doesn't exist, updates if it does)
+app.post('/api/goals', async (req, res) => {
+  const { userId, weekly, title, industry, status } = req.body;
+  try {
+    await db.query(`
+      INSERT INTO user_goals (user_id, goal_weekly, goal_title, goal_industry, goal_status)
+      VALUES (?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+        goal_weekly   = VALUES(goal_weekly),
+        goal_title    = VALUES(goal_title),
+        goal_industry = VALUES(goal_industry),
+        goal_status   = VALUES(goal_status)
+    `, [userId, weekly, title, industry, status]);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

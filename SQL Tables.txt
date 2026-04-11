@@ -4,6 +4,10 @@ CREATE TABLE users (
   email VARCHAR(255) NOT NULL UNIQUE,
   password VARCHAR(255) NOT NULL
 );
+USE JobTracker;
+ALTER TABLE users 
+ADD COLUMN reset_token VARCHAR(255) NULL,
+ADD COLUMN reset_expiry DATETIME NULL;
 
 CREATE TABLE password_resets (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -51,3 +55,6 @@ CREATE TABLE user_settings (
 
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+npm install nodemailer
+npm install node-cron
