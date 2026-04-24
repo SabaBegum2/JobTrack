@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JobTrack - Settings</title>
+  <link rel="stylesheet" href="Styles.css" />
+  <style>
+
+  </style>
+</head>
+
+<body class="dashboard-page">
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="navbar-left">
+      <a href="Dashboard.html" class="navbar-logo">
+        <img src="../JobTrackLogo.png" alt="JobTrack" style="height: 70px;" />
+      </a>
+      <ul class="navbar-links">
+        <li><a href="Dashboard.html">Dashboard</a></li>
+        <li><a href="Applications.html">Applications</a></li>
+        <li><a href="Calendar.html">Calendar</a></li>
+        <li><a href="Resources.html">Resources</a></li>
+        <li><a href="Settings.html">Settings ⚙️</a></li>
+      </ul>
+    </div>
+    <div class="navbar-right">
+      <div class="avatar" id="userAvatar" onclick="toggleDropdown()">AS</div>
+      <div class="dropdown" id="avatarDropdown">
+        <div class="dropdown-name" id="dropdownName">User</div>
+        <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 8px 0;">
+        <a href="#" class="dropdown-item" onclick="logout()">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="dashboard-wrapper">
+    <div class="page-title">Settings</div>
+    <div class="page-subtitle">Manage your account, appearance, and preferences.</div>
+
+    <!-- ── PROFILE ── -->
+    <div class="settings-card">
+      <div class="settings-card-header">
+        <span class="header-icon">👤</span>
+        <div>
+          <h2>Profile Information</h2>
+          <p>Update your name and email address</p>
+        </div>
+      </div>
+      <div class="settings-card-body">
+        <div class="avatar-section">
+          <div class="avatar-big" id="avatarBig">AS</div>
+          <div class="avatar-info">
+            <h3 id="profileName">Loading...</h3>
+            <p id="profileEmail">Loading...</p>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="inputFullName" placeholder="Your full name" />
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="inputEmail" placeholder="your@email.com" />
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
+          <button class="btn btn-ghost" onclick="cancelProfile()">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CHANGE PASSWORD ── -->
+    <div class="settings-card">
+      <div class="settings-card-header">
+        <span class="header-icon">🔒</span>
+        <div>
+          <h2>Change Password</h2>
+          <p>Update your password to keep your account secure</p>
+        </div>
+      </div>
+      <div class="settings-card-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Current Password</label>
+            <input type="password" id="inputCurrentPassword" placeholder="Current password" />
+          </div>
+          <div class="form-group">
+            <label>New Password</label>
+            <input type="password" id="inputNewPassword" placeholder="New password" />
+          </div>
+        </div>
+        <div class="form-row single">
+          <div class="form-group">
+            <label>Confirm New Password</label>
+            <input type="password" id="inputConfirmPassword" placeholder="Confirm new password" />
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="changePassword()">Update Password</button>
+          <span id="password-saved-msg" style="display:none; color:#4ade80; font-size:0.875rem; transition: opacity 0.3s;">✓ Password updated</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── APPEARANCE ── -->
+    <div class="settings-card">
+      <div class="settings-card-header">
+        <span class="header-icon">🎨</span>
+        <div>
+          <h2>Appearance</h2>
+          <p>Choose how JobTrack looks for you</p>
+        </div>
+      </div>
+      <div class="settings-card-body">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label style="margin-bottom: 10px; display: block;">Theme</label>
+          <div class="theme-options">
+            <div class="theme-option" id="theme-light" onclick="setTheme('light')">
+              <div class="theme-dot" style="background: #f0f4f8; border: 2px solid #dbe3ee;"></div>
+              ☀️ Light Mode
+            </div>
+            <div class="theme-option selected" id="theme-dark" onclick="setTheme('dark')">
+              <div class="theme-dot" style="background: #000000; border: 2px solid rgba(255,255,255,0.1);"></div>
+              🌙 Dark Mode
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PREFERENCES ── -->
+    <div class="settings-card">
+      <div class="settings-card-header">
+        <span class="header-icon">⚙️</span>
+        <div>
+          <h2>Preferences</h2>
+          <p>Customize how you use JobTrack</p>
+        </div>
+      </div>
+      <div class="settings-card-body" style="padding-top: 8px; padding-bottom: 8px;">
+        <div class="toggle-row">
+          <div class="toggle-label">
+            <h4>Browser Notifications</h4>
+            <p>Get notified about upcoming interviews and deadlines</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="pref-notifications" onchange="savePreference('notifications', this.checked)" />
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-label">
+            <h4>Email Reminders</h4>
+            <p>Receive email reminders for calendar events</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="pref-email" onchange="savePreference('emailReminders', this.checked)" />
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="toggle-row" id="email-timing-row" style="display:none;">
+          <div class="toggle-label">
+            <h4>Reminder Timing</h4>
+            <p>How far in advance to send the email</p>
+          </div>
+          <select id="pref-email-timing" onchange="savePreference('emailTiming', this.value)">
+            <option value="24">24 hours before</option>
+            <option value="48">48 hours before</option>
+            <option value="168">1 week before</option>
+          </select>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-label">
+            <h4>Weekly Summary</h4>
+            <p>Get a weekly digest of your job search activity</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="pref-weekly" onchange="savePreference('weeklySummary', this.checked)" />
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── JOB SEARCH GOALS ── -->
+    <div class="settings-card">
+      <div class="settings-card-header">
+        <span class="header-icon">🎯</span>
+        <div>
+          <h2>Job Search Goals</h2>
+          <p>Set targets to keep your search on track</p>
+        </div>
+      </div>
+      <div class="settings-card-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Applications Per Week Goal</label>
+            <input type="number" id="goal-weekly" placeholder="e.g. 5" min="1" max="50" />
+          </div>
+          <div class="form-group">
+            <label>Target Job Title</label>
+            <input type="text" id="goal-title" placeholder="e.g. Software Engineer" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Target Industry</label>
+            <select id="goal-industry">
+              <option value="">Select industry</option>
+              <option value="tech">Technology</option>
+              <option value="finance">Finance</option>
+              <option value="healthcare">Healthcare</option>
+              <option value="consulting">Consulting</option>
+              <option value="engineering">Engineering</option>
+              <option value="marketing">Marketing</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Job Search Status</label>
+            <select id="goal-status">
+              <option value="actively-looking">Actively Looking</option>
+              <option value="open">Open to Opportunities</option>
+              <option value="not-looking">Not Currently Looking</option>
+            </select>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="saveGoals()">Save Goals</button>
+          <span id="goals-saved-msg" style="display:none; color:#4ade80; font-size:0.875rem; transition: opacity 0.3s;">✓ Goals saved</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="danger-zone">
+      <p>These actions are permanent and cannot be undone. Please be certain before proceeding.</p>
+      <div class="btn-row">
+        <button class="btn btn-danger" onclick="confirmClearData()">Clear All Applications</button>
+        <button class="btn btn-ghost" onclick="confirmDeleteAccount()"
+          style="color: var(--danger); border-color: rgba(248,113,113,0.3);">Delete Account</button>
+      </div>
+    </div>
+
+  </div>
+  <div class="toast" id="toast"></div>
+  <footer class="site-footer">
+  <p>© 2025 JobTrack. Built to help you land your next role.</p>
+</footer>
+
+  <script>
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user) window.location.href = 'Login.html';
+
+    function getInitials(name) {
+      return name.split(' ').map(n => n[0]).join('').toUpperCase();
+    }
+
+    if (user?.full_name) {
+      const initials = getInitials(user.full_name);
+      document.getElementById('userAvatar').textContent = initials;
+      document.getElementById('avatarBig').textContent = initials;
+      document.getElementById('dropdownName').textContent = user.full_name;
+      document.getElementById('profileName').textContent = user.full_name;
+      document.getElementById('profileEmail').textContent = user.email || '';
+      document.getElementById('inputFullName').value = user.full_name;
+      document.getElementById('inputEmail').value = user.email || '';
+    }
+
+    const currentPage = window.location.pathname.split('/').pop();
+    document.querySelectorAll('.navbar-links a').forEach(link => {
+      if (link.getAttribute('href') === currentPage) link.classList.add('active');
+    });
+
+    function toggleDropdown() {
+      document.getElementById('avatarDropdown').classList.toggle('show');
+    }
+    document.addEventListener('click', function (e) {
+      const avatar = document.getElementById('userAvatar');
+      const dropdown = document.getElementById('avatarDropdown');
+      if (!avatar.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.remove('show');
+      }
+    });
+
+    function logout() {
+      localStorage.removeItem('user');
+      window.location.href = 'Login.html';
+    }
+
+    function showToast(msg, color = 'rgba(15,25,45,0.95)') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.background = color;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    function applyTheme(theme) {
+      document.querySelectorAll('.theme-option').forEach(el => el.classList.remove('selected'));
+      const el = document.getElementById('theme-' + theme);
+      if (el) el.classList.add('selected');
+      document.body.classList.remove('light-mode', 'dark-mode');
+      document.body.classList.add(theme + '-mode');
+    }
+
+    function setTheme(theme) {
+      localStorage.setItem('jt-theme', theme);
+      applyTheme(theme);
+      showToast('Theme updated ✓');
+    }
+
+    const savedTheme = localStorage.getItem('jt-theme') || 'dark';
+    applyTheme(savedTheme);
+
+    async function saveProfile() {
+      const fullName = document.getElementById('inputFullName').value.trim();
+      const email = document.getElementById('inputEmail').value.trim();
+      if (!fullName || !email) { showToast('Name and email are required.'); return; }
+      try {
+        const res = await fetch(`http://localhost:3000/api/users/${user.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ full_name: fullName, email })
+        });
+        if (!res.ok) throw new Error('Update failed');
+        user.full_name = fullName;
+        user.email = email;
+        localStorage.setItem('user', JSON.stringify(user));
+        const initials = getInitials(fullName);
+        document.getElementById('userAvatar').textContent = initials;
+        document.getElementById('avatarBig').textContent = initials;
+        document.getElementById('dropdownName').textContent = fullName;
+        document.getElementById('profileName').textContent = fullName;
+        document.getElementById('profileEmail').textContent = email;
+        showToast('Profile updated ✓');
+      } catch (err) {
+        showToast('Failed to update profile.');
+      }
+    }
+
+    function cancelProfile() {
+      document.getElementById('inputFullName').value = user.full_name || '';
+      document.getElementById('inputEmail').value = user.email || '';
+    }
+
+    async function changePassword() {
+      const current = document.getElementById('inputCurrentPassword').value;
+      const newPwd = document.getElementById('inputNewPassword').value;
+      const confirm = document.getElementById('inputConfirmPassword').value;
+      if (!current || !newPwd || !confirm) { showToast('All password fields are required.'); return; }
+      if (newPwd !== confirm) { showToast('New passwords do not match.'); return; }
+      if (newPwd.length < 6) { showToast('Password must be at least 6 characters.'); return; }
+      try {
+        const res = await fetch(`http://localhost:3000/api/users/${user.id}/password`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ current_password: current, new_password: newPwd })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Failed');
+        document.getElementById('inputCurrentPassword').value = '';
+        document.getElementById('inputNewPassword').value = '';
+        document.getElementById('inputConfirmPassword').value = '';
+        showToast('Password updated ✓');
+        const msg = document.getElementById('password-saved-msg');
+        msg.style.display = 'inline';
+        msg.style.opacity = '1';
+        setTimeout(() => {
+          msg.style.opacity = '0';
+          setTimeout(() => msg.style.display = 'none', 300);
+        }, 3000);
+      } catch (err) {
+        showToast('Failed: ' + err.message);
+      }
+    }
+
+    function loadPreferences() {
+      const prefs = JSON.parse(localStorage.getItem('jt-prefs') || '{}');
+      document.getElementById('pref-notifications').checked = prefs.notifications ?? false;
+      document.getElementById('pref-email').checked = prefs.emailReminders ?? false;
+      document.getElementById('pref-weekly').checked = prefs.weeklySummary ?? false;
+      document.getElementById('email-timing-row').style.display = prefs.emailReminders ? 'flex' : 'none';
+      document.getElementById('pref-email-timing').value = prefs.emailTiming || '24';
+    }
+
+    function savePreference(key, value) {
+      const prefs = JSON.parse(localStorage.getItem('jt-prefs') || '{}');
+      prefs[key] = value;
+      localStorage.setItem('jt-prefs', JSON.stringify(prefs));
+      showToast('Preference saved ✓');
+
+      if (key === 'emailReminders') {
+        document.getElementById('email-timing-row').style.display = value ? 'flex' : 'none';
+      }
+
+      // Save email reminder prefs to backend so the scheduler can read them
+      if (key === 'emailReminders' || key === 'emailTiming') {
+        const latestPrefs = JSON.parse(localStorage.getItem('jt-prefs') || '{}');
+        fetch(`http://localhost:3000/api/users/${user.id}/email-prefs`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email_reminders: latestPrefs.emailReminders ?? false,
+            email_timing: parseInt(latestPrefs.emailTiming) || 24
+          })
+        }).catch(err => console.error('Failed to save email prefs:', err));
+      }
+
+      // Save weekly summary pref to backend
+      if (key === 'weeklySummary') {
+        fetch(`http://localhost:3000/api/users/${user.id}/email-prefs`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            weekly_summary: value
+          })
+        }).catch(err => console.error('Failed to save weekly summary pref:', err));
+      }
+
+      if (key === 'notifications' && value) {
+        Notification.requestPermission().then(perm => {
+          if (perm !== 'granted') {
+            showToast('Notifications blocked by browser.');
+            document.getElementById('pref-notifications').checked = false;
+            prefs.notifications = false;
+            localStorage.setItem('jt-prefs', JSON.stringify(prefs));
+          }
+        });
+      }
+    }
+
+    async function loadGoals() {
+      const user = JSON.parse(localStorage.getItem('user'));
+      try {
+        const res = await fetch(`http://localhost:3000/api/goals?userId=${user.id}`);
+        const goals = await res.json();
+        if (!goals || !goals.goal_weekly) return;
+        document.getElementById('goal-weekly').value = goals.goal_weekly || '';
+        document.getElementById('goal-title').value = goals.goal_title || '';
+        document.getElementById('goal-industry').value = goals.goal_industry || '';
+        document.getElementById('goal-status').value = goals.goal_status || 'actively-looking';
+      } catch (err) {
+        console.error('Failed to load goals:', err);
+      }
+    }
+
+    async function saveGoals() {
+      const user = JSON.parse(localStorage.getItem('user'));
+      const body = {
+        userId: user.id,
+        weekly: document.getElementById('goal-weekly').value,
+        title: document.getElementById('goal-title').value,
+        industry: document.getElementById('goal-industry').value,
+        status: document.getElementById('goal-status').value,
+      };
+      try {
+        const res = await fetch('http://localhost:3000/api/goals', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        if (res.ok) {
+          showToast('Goals saved!');
+          const msg = document.getElementById('goals-saved-msg');
+          msg.style.display = 'inline';
+          msg.style.opacity = '1';
+          setTimeout(() => {
+            msg.style.opacity = '0';
+            setTimeout(() => msg.style.display = 'none', 300);
+          }, 3000);
+        } else {
+          showToast('Failed to save goals.');
+        }
+      } catch (err) {
+        showToast('Failed to save goals.');
+      }
+    }
+
+    function sendNotification(title, body) {
+      const prefs = JSON.parse(localStorage.getItem('jt-prefs') || '{}');
+      if (!prefs.notifications) return;
+      if (Notification.permission !== 'granted') return;
+      new Notification(title, { body, icon: '../JobTrackLogo.png' });
+    }
+
+    function confirmClearData() {
+      if (!confirm('This will permanently delete ALL your job applications. Are you sure?')) return;
+      if (!confirm('This cannot be undone. Confirm again to proceed.')) return;
+      fetch(`http://localhost:3000/api/jobs/all/${user.id}`, { method: 'DELETE' })
+        .then(res => { if (!res.ok) throw new Error(); showToast('All applications cleared.'); })
+        .catch(() => showToast('Failed to clear data.'));
+    }
+
+    function confirmDeleteAccount() {
+      const input = prompt('Type DELETE to permanently delete your account:');
+      if (input !== 'DELETE') { showToast('Account deletion cancelled.'); return; }
+      fetch(`http://localhost:3000/api/users/${user.id}`, { method: 'DELETE' })
+        .then(res => {
+          if (!res.ok) throw new Error();
+          localStorage.removeItem('user');
+          localStorage.removeItem('jt-theme');
+          localStorage.removeItem('jt-prefs');
+          localStorage.removeItem('jt-goals');
+          window.location.href = 'Login.html';
+        })
+        .catch(() => showToast('Failed to delete account.'));
+    }
+
+    loadPreferences();
+    loadGoals();
+  </script>
+</body>
+
+</html>

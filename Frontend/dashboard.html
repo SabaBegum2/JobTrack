@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JobTrack - Dashboard</title>
+  <link rel="stylesheet" href="Styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="dashboard-page">
+
+  <nav class="navbar">
+    <div class="navbar-left">
+      <a href="Dashboard.html" class="navbar-logo">
+        <img src="../JobTrackLogo.png" alt="JobTrack" style="height: 70px;" />
+      </a>
+      <ul class="navbar-links">
+        <li><a href="Dashboard.html">Dashboard</a></li>
+        <li><a href="Applications.html">Applications</a></li>
+        <li><a href="Calendar.html">Calendar</a></li>
+        <li><a href="Resources.html">Resources</a></li>
+        <li><a href="Settings.html">Settings ⚙️</a></li>
+      </ul>
+    </div>
+    <div class="navbar-right">
+      <div class="avatar" id="userAvatar" onclick="toggleDropdown()">AS</div>
+      <div class="dropdown" id="avatarDropdown">
+        <div class="dropdown-name" id="dropdownName">User</div>
+        <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 8px 0;">
+        <a href="#" class="dropdown-item" onclick="logout()">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- DASHBOARD CONTENT -->
+  <div class="dashboard-wrapper">
+
+    <div class="topbar">
+      <div class="topbar-left">
+        <h1 id="welcomeText">Welcome back!</h1>
+        <p>Track your applications, monitor progress, and stay organized.</p>
+      </div>
+      <div class="topbar-right">
+        <a href="Applications.html" class="action-btn action-secondary">Applications</a>
+        <a href="Resources.html" class="action-btn action-secondary">Resources</a>
+        <a href="Calendar.html" class="action-btn action-secondary">Calendar</a>
+        <button class="action-btn action-primary" onclick="openQuickAdd()">+ Quick Add Job</button>
+      </div>
+    </div>
+
+    <!-- APPLICATION PROGRESS -->
+    <div class="side-card" style="margin-bottom: 24px;">
+      <h3>Application Progress</h3>
+      <div class="progress-item"><span>Applied</span><span id="pct-applied">0%</span></div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="bar-applied" style="width:0%"></div>
+      </div>
+      <div class="progress-item"><span>Interviewing</span><span id="pct-interviewing">0%</span></div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="bar-interviewing" style="width:0%"></div>
+      </div>
+      <div class="progress-item"><span>Offers</span><span id="pct-offers">0%</span></div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="bar-offers" style="width:0%"></div>
+      </div>
+      <div class="progress-item"><span>Rejected</span><span id="pct-rejected">0%</span></div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="bar-rejected" style="width:0%; background:#c53030;"></div>
+      </div>
+    </div>
+
+    <!-- MAIN STAT CARDS -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>Total Applications</h3>
+        <p id="stat-total">—</p>
+      </div>
+      <div class="stat-card">
+        <h3>Applied</h3>
+        <p id="stat-applied">—</p>
+      </div>
+      <div class="stat-card">
+        <h3>Interviews</h3>
+        <p id="stat-interviewing">—</p>
+      </div>
+      <div class="stat-card accent-green">
+        <h3>Offers</h3>
+        <p id="stat-offers">—</p>
+      </div>
+      <div class="stat-card accent-red">
+        <h3>Rejected</h3>
+        <p id="stat-rejected">—</p>
+      </div>
+      <div class="stat-card accent-blue">
+        <h3>Response Rate</h3>
+        <p id="stat-response">—</p>
+      </div>
+    </div>
+
+    <!-- SECONDARY STATS -->
+    <div class="secondary-stats">
+      <div class="mini-stat-card">
+        <div class="mini-stat-icon icon-blue">📅</div>
+        <div class="mini-stat-info">
+          <h4>Days Since Last Application</h4>
+          <p id="days-since">—</p>
+        </div>
+      </div>
+      <div class="mini-stat-card">
+        <div class="mini-stat-icon icon-yellow">🔥</div>
+        <div class="mini-stat-info">
+          <h4>Applications This Week</h4>
+          <p id="week-streak">—</p>
+        </div>
+      </div>
+      <div class="mini-stat-card">
+        <div class="mini-stat-icon icon-green">🎯</div>
+        <div class="mini-stat-info">
+          <h4>Success Rate</h4>
+          <p id="success-rate">—</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- DONUT CHART + UPCOMING INTERVIEWS -->
+    <div class="middle-grid">
+      <div class="dashboard-section">
+        <div class="section-header">
+          <h2>Status Breakdown</h2>
+        </div>
+        <div class="donut-wrapper">
+          <div class="donut-canvas-wrap">
+            <canvas id="donutChart" width="160" height="160"></canvas>
+          </div>
+          <div class="donut-legend">
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#2d5be3"></div> Applied
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#f59e0b"></div> Interviewing
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#18794e"></div> Offer
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#c53030"></div> Rejected
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#6b46c1"></div> Interested
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-section">
+        <div class="section-header">
+          <h2>Upcoming Interviews</h2>
+          <a href="Calendar.html">View calendar</a>
+        </div>
+        <div class="interview-list" id="upcomingInterviews">
+          <p class="no-interviews">Loading...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- RECENT APPLICATIONS -->
+    <div class="dashboard-section">
+      <div class="section-header">
+        <h2>Recent Applications</h2>
+        <a href="Applications.html">See all</a>
+      </div>
+      <div id="recentAppsContainer"></div>
+    </div>
+
+    <!-- GOALS CARD -->
+    <div class="dashboard-section" id="goalsCard" style="display:none;">
+      <div class="section-header">
+        <h2>🎯 Your Goals</h2>
+      </div>
+      <div class="secondary-stats">
+        <div class="mini-stat-card">
+          <div class="mini-stat-icon icon-blue">📋</div>
+          <div class="mini-stat-info">
+            <h4>Weekly Target</h4>
+            <p id="goal-display-weekly">—</p>
+          </div>
+        </div>
+        <div class="mini-stat-card">
+          <div class="mini-stat-icon icon-green">💼</div>
+          <div class="mini-stat-info">
+            <h4>Target Role</h4>
+            <p id="goal-display-title">—</p>
+          </div>
+        </div>
+        <div class="mini-stat-card">
+          <div class="mini-stat-icon icon-yellow">🔍</div>
+          <div class="mini-stat-info">
+            <h4>Search Status</h4>
+            <p id="goal-display-status">—</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUICK TIPS -->
+    <div class="dashboard-section">
+      <div class="section-header">
+        <h2>Quick Tips</h2>
+      </div>
+      <div class="tips-list">
+        <div class="tip-card">
+          <h4>Tailor every application</h4>
+          <p>Customize your resume and cover letter for each role. Mirror keywords from the job description to pass ATS
+            filters.</p>
+        </div>
+        <div class="tip-card">
+          <h4>Prepare your STAR stories</h4>
+          <p>For behavioral interviews, have 5–6 stories ready using Situation, Task, Action, Result format.</p>
+        </div>
+        <div class="tip-card">
+          <h4>Follow up after applying</h4>
+          <p>Send a polite follow-up email 5–7 days after applying. It shows initiative and keeps you top of mind.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- QUICK ADD MODAL -->
+  <div class="modal-overlay" id="quickAddModal">
+    <div class="modal-box">
+      <h2>Quick Add Job</h2>
+      <div class="form-group">
+        <label>Company</label>
+        <input type="text" id="qa-company" placeholder="e.g. Google" />
+      </div>
+      <div class="form-group">
+        <label>Role / Title</label>
+        <input type="text" id="qa-title" placeholder="e.g. Software Engineer Intern" />
+      </div>
+      <div class="form-group">
+        <label>Date Applied</label>
+        <input type="date" id="qa-date" />
+      </div>
+      <div class="form-group">
+        <label>Status</label>
+        <select id="qa-status">
+          <option value="interested">Interested</option>
+          <option value="applied" selected>Applied</option>
+          <option value="interviewing">Interviewing</option>
+          <option value="offer">Offer</option>
+          <option value="rejected">Rejected</option>
+        </select>
+      </div>
+      <div class="modal-buttons">
+        <button class="modal-btn modal-btn-primary" onclick="submitQuickAdd()">Add Job</button>
+        <button class="modal-btn modal-btn-cancel" onclick="closeQuickAdd()">Cancel</button>
+      </div>
+    </div>
+  </div>
+  <footer class="site-footer">
+  <p>© 2025 JobTrack. Built to help you land your next role.</p>
+</footer>
+
+  <script>
+    const savedTheme = localStorage.getItem('jt-theme') || 'dark';
+    if (savedTheme === 'light') document.body.classList.add('light-mode');
+    if (savedTheme === 'dark') document.body.classList.add('dark-mode');
+
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user) window.location.href = 'Login.html';
+
+    if (user?.full_name) {
+      const initials = user.full_name.split(' ').map(n => n[0]).join('').toUpperCase();
+      document.getElementById('userAvatar').textContent = initials;
+      document.getElementById('dropdownName').textContent = user.full_name;
+      document.getElementById('welcomeText').textContent = `Welcome back, ${user.full_name}!`;
+    }
+
+    document.getElementById('qa-date').value = new Date().toISOString().split('T')[0];
+
+    // ---- DONUT CHART ----
+    let donutChart = null;
+
+    function renderDonut(stats) {
+      const ctx = document.getElementById('donutChart').getContext('2d');
+      const data = [stats.applied, stats.interviewing, stats.offers, stats.rejected, stats.interested || 0];
+      if (donutChart) donutChart.destroy();
+      if (data.every(v => v === 0)) {
+        ctx.clearRect(0, 0, 160, 160);
+        ctx.fillStyle = 'rgba(255,255,255,0.05)';
+        ctx.beginPath(); ctx.arc(80, 80, 60, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = 'rgba(255,255,255,0.02)';
+        ctx.beginPath(); ctx.arc(80, 80, 35, 0, Math.PI * 2); ctx.fill();
+        return;
+      }
+      donutChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          datasets: [{
+            data,
+            backgroundColor: ['#2d5be3', '#f59e0b', '#18794e', '#c53030', '#6b46c1'],
+            borderWidth: 2,
+            borderColor: 'rgba(255,255,255,0.05)'
+          }]
+        },
+        options: {
+          cutout: '65%',
+          plugins: { legend: { display: false }, tooltip: { enabled: true } },
+          animation: { duration: 600 }
+        }
+      });
+    }
+
+    // ---- UPCOMING INTERVIEWS ----
+    async function loadUpcomingInterviews() {
+      const container = document.getElementById('upcomingInterviews');
+      try {
+        const res = await fetch(`http://localhost:3000/api/calendar/events?user_id=${user.id}`);
+        const events = await res.json();
+        const today = new Date().toISOString().split('T')[0];
+        const interviews = events
+          .filter(e => e.type === 'interview' && e.date >= today)
+          .sort((a, b) => a.date.localeCompare(b.date))
+          .slice(0, 4);
+        if (interviews.length === 0) {
+          container.innerHTML = `<p class="no-interviews">No upcoming interviews scheduled.</p>`;
+          return;
+        }
+        container.innerHTML = interviews.map(ev => {
+          const d = new Date(ev.date + 'T00:00:00');
+          const month = d.toLocaleString('default', { month: 'short' });
+          const day = d.getDate();
+          const time = ev.time ? formatTime(ev.time) : 'All day';
+          return `
+            <div class="interview-item">
+              <div class="interview-date-box">
+                <div class="month">${month}</div>
+                <div class="day">${day}</div>
+              </div>
+              <div class="interview-info">
+                <h4>${ev.title}</h4>
+                <p>${time}</p>
+              </div>
+            </div>`;
+        }).join('');
+      } catch (err) {
+        container.innerHTML = `<p class="no-interviews">Could not load interviews.</p>`;
+      }
+    }
+
+    function formatTime(timeStr) {
+      const [h, m] = timeStr.split(':');
+      const d = new Date();
+      d.setHours(+h, +m);
+      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    // ---- GOALS ----
+    async function loadGoals() {
+      try {
+        const res = await fetch(`http://localhost:3000/api/goals?userId=${user.id}`);
+        const goals = await res.json();
+        if (!goals || !goals.goal_weekly) return;
+
+        document.getElementById('goalsCard').style.display = 'block';
+
+        document.getElementById('goal-display-weekly').textContent =
+          goals.goal_weekly ? `${goals.goal_weekly} apps / week` : '—';
+
+        document.getElementById('goal-display-title').textContent =
+          goals.goal_title || '—';
+
+        const statusMap = {
+          'actively-looking': 'Actively Looking',
+          'open': 'Open to Opportunities',
+          'not-looking': 'Not Looking'
+        };
+        document.getElementById('goal-display-status').textContent =
+          statusMap[goals.goal_status] || '—';
+
+        if (goals.goal_weekly) {
+          const el = document.getElementById('week-streak');
+          const current = parseInt(el.textContent) || 0;
+          el.textContent = `${current} / ${goals.goal_weekly} this week`;
+        }
+      } catch (err) {
+        console.error('Failed to load goals:', err);
+      }
+    }
+
+    // ---- MAIN DASHBOARD DATA ----
+    async function loadDashboard() {
+      try {
+        const res = await fetch(`http://localhost:3000/api/dashboard?userId=${user.id}`);
+        const data = await res.json();
+        const s = data.stats;
+        //const p = data.progress;
+
+        document.getElementById('stat-total').textContent = s.total;
+        document.getElementById('stat-applied').textContent = s.applied;
+        document.getElementById('stat-interviewing').textContent = s.interviewing;
+        document.getElementById('stat-offers').textContent = s.offers;
+        document.getElementById('stat-rejected').textContent = s.rejected || 0;
+
+        const responded = (s.interviewing || 0) + (s.offers || 0);
+        const responseRate = s.applied > 0 ? Math.round((responded / s.applied) * 100) : 0;
+        document.getElementById('stat-response').textContent = responseRate + '%';
+
+        const successRate = s.total > 0 ? Math.round((s.offers / s.total) * 100) : 0;
+        document.getElementById('success-rate').textContent = successRate + '%';
+
+        const total = s.total || 0;
+        setProgress('applied', total ? Math.round((s.applied / total) * 100) : 0);
+        setProgress('interviewing', total ? Math.round((s.interviewing / total) * 100) : 0);
+        setProgress('offers', total ? Math.round((s.offers / total) * 100) : 0);
+        setProgress('rejected', total ? Math.round(((s.rejected || 0) / total) * 100) : 0);
+
+        renderDonut(s);
+        renderRecentApps(data.recent);
+        computeSecondaryStats(data.recent);
+        loadGoals();
+      } catch (err) {
+        console.error('Dashboard load error:', err);
+      }
+    }
+
+    function setProgress(key, pct) {
+      document.getElementById('pct-' + key).textContent = pct + '%';
+      document.getElementById('bar-' + key).style.width = pct + '%';
+    }
+
+    function computeSecondaryStats(recent) {
+      if (!recent || recent.length === 0) {
+        document.getElementById('days-since').textContent = 'No apps yet';
+        document.getElementById('week-streak').textContent = '0 this week';
+        return;
+      }
+      const latest = new Date(recent[0].date);
+      const today = new Date();
+      const diffDays = Math.floor((today - latest) / (1000 * 60 * 60 * 24));
+      document.getElementById('days-since').textContent =
+        diffDays === 0 ? 'Today!' : diffDays === 1 ? 'Yesterday' : `${diffDays} days ago`;
+      const weekAgo = new Date();
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      const thisWeek = recent.filter(a => new Date(a.date) >= weekAgo).length;
+      document.getElementById('week-streak').textContent =
+        thisWeek === 1 ? '1 this week' : `${thisWeek} this week`;
+    }
+
+    function renderRecentApps(recent) {
+      const container = document.getElementById('recentAppsContainer');
+      if (!recent || recent.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📋</div>
+            <h3>No applications yet</h3>
+            <p>Start tracking your job search by adding your first application.</p>
+            <button class="action-btn action-primary" onclick="openQuickAdd()">+ Add Your First Job</button>
+          </div>`;
+        return;
+      }
+      const statusClass = {
+        'applied': 'status-applied',
+        'interviewing': 'status-interview',
+        'offer': 'status-offer',
+        'rejected': 'status-rejected',
+        'interested': 'status-interested',
+      };
+      container.innerHTML = `
+        <table class="applications-table">
+          <thead>
+            <tr>
+              <th>Company</th>
+              <th>Role</th>
+              <th>Date Applied</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${recent.map(app => `
+              <tr>
+                <td>${app.company}</td>
+                <td>${app.title}</td>
+                <td>${app.date?.split('T')[0]}</td>
+                <td><span class="status-badge ${statusClass[app.status?.toLowerCase()] || 'status-applied'}">${app.status}</span></td>
+              </tr>`).join('')}
+          </tbody>
+        </table>`;
+    }
+
+    // ---- QUICK ADD ----
+    function openQuickAdd() {
+      document.getElementById('quickAddModal').classList.add('show');
+    }
+
+    function closeQuickAdd() {
+      document.getElementById('quickAddModal').classList.remove('show');
+      document.getElementById('qa-company').value = '';
+      document.getElementById('qa-title').value = '';
+      document.getElementById('qa-date').value = new Date().toISOString().split('T')[0];
+      document.getElementById('qa-status').value = 'applied';
+    }
+
+    async function submitQuickAdd() {
+      const company = document.getElementById('qa-company').value.trim();
+      const title = document.getElementById('qa-title').value.trim();
+      const date = document.getElementById('qa-date').value;
+      const status = document.getElementById('qa-status').value;
+      if (!company || !title || !date) {
+        alert('Company, role, and date are required.');
+        return;
+      }
+      try {
+        const res = await fetch('http://localhost:3000/api/jobs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: user.id, company, title, date, status, notes: '' })
+        });
+        if (!res.ok) throw new Error('Failed to add job');
+        closeQuickAdd();
+        loadDashboard();
+      } catch (err) {
+        console.error(err);
+        alert('Failed to add job. Please try again.');
+      }
+    }
+
+    // ---- NAVBAR ----
+    const currentPage = window.location.pathname.split('/').pop().toLowerCase();
+    document.querySelectorAll('.navbar-links a').forEach(link => {
+      if (link.getAttribute('href').toLowerCase() === currentPage) link.classList.add('active');
+    });
+
+    function toggleDropdown() {
+      document.getElementById('avatarDropdown').classList.toggle('show');
+    }
+
+    document.addEventListener('click', function (e) {
+      const avatar = document.getElementById('userAvatar');
+      const dropdown = document.getElementById('avatarDropdown');
+      if (!avatar.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.remove('show');
+      }
+    });
+
+    function logout() {
+      localStorage.removeItem('user');
+      window.location.href = 'Login.html';
+    }
+
+    // ---- INIT ----
+    loadDashboard();
+    loadUpcomingInterviews();
+  </script>
+</body>
+
+</html>

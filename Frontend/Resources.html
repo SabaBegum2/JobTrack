@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JobTrack - Resources</title>
+  <link rel="stylesheet" href="Styles.css" />
+</head>
+
+<body class="dashboard-page">
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="navbar-left">
+      <a href="Dashboard.html" class="navbar-logo">
+        <img src="../JobTrackLogo.png" alt="JobTrack" style="height: 70px;" />
+      </a>
+      <ul class="navbar-links">
+        <li><a href="Dashboard.html">Dashboard</a></li>
+        <li><a href="Applications.html">Applications</a></li>
+        <li><a href="Calendar.html">Calendar</a></li>
+        <li><a href="Resources.html">Resources</a></li>
+        <li><a href="Settings.html">Settings ⚙️</a></li>
+      </ul>
+    </div>
+    <div class="navbar-right">
+      <div class="avatar" id="userAvatar" onclick="toggleDropdown()">AS</div>
+      <div class="dropdown" id="avatarDropdown">
+        <div class="dropdown-name" id="dropdownName">User</div>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 8px 0;">
+        <a href="#" class="dropdown-item" onclick="logout()">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="dashboard-wrapper">
+    <div class="topbar">
+      <div class="topbar-left">
+        <h1>Job Search Resources</h1>
+        <p>Curated tools and guides to help you land your next role</p>
+      </div>
+    </div>
+
+    <div class="controls">
+      <input id="searchBox" placeholder="Search resources..." oninput="filterCards()" />
+      <button class="filter-btn active" onclick="setFilter('all', this)">All</button>
+      <button class="filter-btn" onclick="setFilter('Resume', this)">Resume</button>
+      <button class="filter-btn" onclick="setFilter('Interview', this)">Interview</button>
+      <button class="filter-btn" onclick="setFilter('Networking', this)">Networking</button>
+      <button class="filter-btn" onclick="setFilter('Job Boards', this)">Job Boards</button>
+      <button class="filter-btn" onclick="setFilter('Salary', this)">Salary</button>
+    </div>
+
+    <div class="no-results" id="noResults">No resources match your search.</div>
+
+    <div id="sectionResume">
+      <p class="section-label">Resume &amp; Cover Letter</p>
+      <div class="resource-grid" id="gridResume"></div>
+    </div>
+    <div id="sectionInterview">
+      <p class="section-label">Interview Prep</p>
+      <div class="resource-grid" id="gridInterview"></div>
+    </div>
+    <div id="sectionNetworking">
+      <p class="section-label">Networking</p>
+      <div class="resource-grid" id="gridNetworking"></div>
+    </div>
+    <div id="sectionJobBoards">
+      <p class="section-label">Job Boards</p>
+      <div class="resource-grid" id="gridJobBoards"></div>
+    </div>
+    <div id="sectionSalary">
+      <p class="section-label">Salary &amp; Negotiation</p>
+      <div class="resource-grid" id="gridSalary"></div>
+    </div>
+  </div>
+  </div>
+  <footer class="site-footer">
+  <p>© 2025 JobTrack. Built to help you land your next role.</p>
+</footer>
+
+  <script>
+    const savedTheme = localStorage.getItem('jt-theme') || 'dark';
+    if (savedTheme === 'light') document.body.classList.add('light-mode');
+    if (savedTheme === 'dark') document.body.classList.add('dark-mode');
+    // Apply saved theme
+
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user) window.location.href = 'Login.html';
+    if (user && user.full_name) {
+      const initials = user.full_name.split(' ').map(n => n[0]).join('').toUpperCase();
+      document.getElementById('userAvatar').textContent = initials;
+      document.getElementById('dropdownName').textContent = user.full_name;
+    }
+    const currentPage = window.location.pathname.split('/').pop();
+    document.querySelectorAll('.navbar-links a').forEach(link => {
+      if (link.getAttribute('href') === currentPage) link.classList.add('active');
+    });
+    function toggleDropdown() { document.getElementById('avatarDropdown').classList.toggle('show'); }
+    document.addEventListener('click', function (e) {
+      const avatar = document.getElementById('userAvatar');
+      const dropdown = document.getElementById('avatarDropdown');
+      if (!avatar.contains(e.target) && !dropdown.contains(e.target)) dropdown.classList.remove('show');
+    });
+    function logout() { localStorage.removeItem('user'); window.location.href = 'Login.html'; }
+
+    const resources = [
+      { cat: "Resume", icon: "📄", iconClass: "icon-blue", badge: "Resume", badgeClass: "badge-blue", title: "Resume.io", desc: "Professional resume builder with ATS-friendly templates and real-time feedback.", url: "https://resume.io" },
+      { cat: "Resume", icon: "✏️", iconClass: "icon-teal", badge: "Resume", badgeClass: "badge-teal", title: "Jobscan", desc: "Compare your resume to job descriptions and optimize for ATS keyword matching.", url: "https://www.jobscan.co" },
+      { cat: "Resume", icon: "📝", iconClass: "icon-blue", badge: "Resume", badgeClass: "badge-blue", title: "Zety Resume Tips", desc: "Step-by-step guides on formatting, action verbs, and writing strong bullet points.", url: "https://zety.com/blog/resume-tips" },
+      { cat: "Resume", icon: "💌", iconClass: "icon-coral", badge: "Resume", badgeClass: "badge-coral", title: "Cover Letter Ninja", desc: "Templates and examples for cover letters tailored to specific industries.", url: "https://coverletterninja.com" },
+      { cat: "Interview", icon: "🎤", iconClass: "icon-purple", badge: "Interview", badgeClass: "badge-purple", title: "Interviewing.io", desc: "Practice technical interviews anonymously with engineers from top companies.", url: "https://interviewing.io" },
+      { cat: "Interview", icon: "🧠", iconClass: "icon-amber", badge: "Interview", badgeClass: "badge-amber", title: "STAR Method Guide", desc: "Master behavioral questions using the Situation, Task, Action, Result framework.", url: "https://www.themuse.com/advice/star-interview-method" },
+      { cat: "Interview", icon: "💬", iconClass: "icon-purple", badge: "Interview", badgeClass: "badge-purple", title: "Glassdoor Interview Q&A", desc: "Real interview questions reported by candidates at thousands of companies.", url: "https://www.glassdoor.com/Interview/index.htm" },
+      { cat: "Interview", icon: "🎯", iconClass: "icon-teal", badge: "Interview", badgeClass: "badge-teal", title: "LeetCode", desc: "Practice coding challenges and algorithm problems for technical interviews.", url: "https://leetcode.com" },
+      { cat: "Networking", icon: "🤝", iconClass: "icon-blue", badge: "Networking", badgeClass: "badge-blue", title: "LinkedIn Optimization", desc: "Tips for writing a compelling LinkedIn headline, summary, and experience section.", url: "https://www.linkedin.com/help/linkedin/answer/a554515" },
+      { cat: "Networking", icon: "📬", iconClass: "icon-coral", badge: "Networking", badgeClass: "badge-coral", title: "Cold Outreach Templates", desc: "Proven email and LinkedIn message templates for reaching out to hiring managers.", url: "https://www.hubspot.com/sales/cold-email-templates" },
+      { cat: "Networking", icon: "🌐", iconClass: "icon-green", badge: "Networking", badgeClass: "badge-green", title: "Meetup.com", desc: "Find local and virtual professional groups in your industry or target field.", url: "https://www.meetup.com" },
+      { cat: "Job Boards", icon: "🔍", iconClass: "icon-blue", badge: "Job Boards", badgeClass: "badge-blue", title: "LinkedIn Jobs", desc: "The largest professional job board with roles across all industries and levels.", url: "https://www.linkedin.com/jobs" },
+      { cat: "Job Boards", icon: "🏢", iconClass: "icon-teal", badge: "Job Boards", badgeClass: "badge-teal", title: "Indeed", desc: "Aggregates millions of job listings from company sites, boards, and agencies.", url: "https://www.indeed.com" },
+      { cat: "Job Boards", icon: "🚀", iconClass: "icon-purple", badge: "Job Boards", badgeClass: "badge-purple", title: "AngelList / Wellfound", desc: "Startup-focused job board with equity and compensation transparency.", url: "https://wellfound.com" },
+      { cat: "Job Boards", icon: "💻", iconClass: "icon-amber", badge: "Job Boards", badgeClass: "badge-amber", title: "We Work Remotely", desc: "Remote-only job listings in tech, marketing, design, and customer support.", url: "https://weworkremotely.com" },
+      { cat: "Salary", icon: "💰", iconClass: "icon-green", badge: "Salary", badgeClass: "badge-green", title: "Levels.fyi", desc: "Salary data for tech roles at top companies, including equity and bonuses.", url: "https://www.levels.fyi" },
+      { cat: "Salary", icon: "📊", iconClass: "icon-teal", badge: "Salary", badgeClass: "badge-teal", title: "Glassdoor Salaries", desc: "Self-reported salary data across industries, job titles, and locations.", url: "https://www.glassdoor.com/Salaries/index.htm" },
+      { cat: "Salary", icon: "🤑", iconClass: "icon-amber", badge: "Salary", badgeClass: "badge-amber", title: "Negotiation Guide (HBR)", desc: "Research-backed tactics for negotiating your offer without losing the deal.", url: "https://hbr.org/2014/04/15-rules-for-negotiating-a-job-offer" },
+    ];
+
+    const sectionMap = { "Resume": "gridResume", "Interview": "gridInterview", "Networking": "gridNetworking", "Job Boards": "gridJobBoards", "Salary": "gridSalary" };
+    const sectionContainerMap = { "Resume": "sectionResume", "Interview": "sectionInterview", "Networking": "sectionNetworking", "Job Boards": "sectionJobBoards", "Salary": "sectionSalary" };
+    let activeFilter = "all";
+
+    function cardHTML(r) {
+      return `<div class="resource-card" onclick="window.open('${r.url}','_blank')">
+        <div class="card-top">
+          <div class="card-icon ${r.iconClass}">${r.icon}</div>
+          <span class="badge ${r.badgeClass}">${r.badge}</span>
+        </div>
+        <div class="card-title">${r.title}</div>
+        <div class="card-desc">${r.desc}</div>
+        <a class="card-link" href="${r.url}" onclick="event.stopPropagation()" target="_blank" rel="noopener">
+          Visit resource
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 10L10 2M10 2H5M10 2v5"/></svg>
+        </a>
+      </div>`;
+    }
+
+    function render(filter, query) {
+      Object.values(sectionMap).forEach(id => document.getElementById(id).innerHTML = '');
+      let anyVisible = false;
+      resources.forEach(r => {
+        const catMatch = filter === 'all' || r.cat === filter;
+        const qMatch = !query || r.title.toLowerCase().includes(query) || r.desc.toLowerCase().includes(query) || r.cat.toLowerCase().includes(query);
+        if (catMatch && qMatch) {
+          document.getElementById(sectionMap[r.cat]).innerHTML += cardHTML(r);
+          anyVisible = true;
+        }
+      });
+      Object.entries(sectionContainerMap).forEach(([cat, id]) => {
+        const hasCards = document.getElementById(sectionMap[cat]).children.length > 0;
+        const show = (filter === 'all' || filter === cat) && hasCards;
+        document.getElementById(id).style.display = show ? 'block' : 'none';
+      });
+      document.getElementById('noResults').style.display = anyVisible ? 'none' : 'block';
+    }
+
+    function setFilter(f, btn) {
+      activeFilter = f;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      render(activeFilter, document.getElementById('searchBox').value.toLowerCase());
+    }
+
+    function filterCards() {
+      render(activeFilter, document.getElementById('searchBox').value.toLowerCase());
+    }
+
+    render('all', '');
+  </script>
+</body>
+
+</html>

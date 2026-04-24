@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JobTrack - Register</title>
+  <link rel="stylesheet" href="Styles.css" />
+  <style>
+    .strength-wrap {
+      margin-top: 8px;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+    }
+
+    .strength-bar {
+      height: 100%;
+      border-radius: 999px;
+      width: 0%;
+      transition: width 0.3s, background 0.3s;
+    }
+
+    .strength-label {
+      font-size: 12px;
+      margin-top: 5px;
+      font-weight: 600;
+      min-height: 16px;
+    }
+  </style>
+</head>
+
+<body class="login-page">
+
+  <div class="login-wrapper">
+
+    <div class="login-logo">
+      <img src="./JobTrackLogo.png" alt="JobTrack Logo" style="height: 55px; vertical-align: middle;" />
+      <h1>JobTrack</h1>
+    </div>
+
+    <div class="login-box">
+      <h2>Create Account</h2>
+      <p>Register to start using your JobTrack account.</p>
+
+      <form id="registerForm">
+        <div class="form-group">
+          <label for="fullName">Full Name</label>
+          <input type="text" id="fullName" placeholder="Enter your full name" required />
+        </div>
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" placeholder="Enter your email" required />
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Create a password" required
+            oninput="checkStrength(this.value)" />
+          <div class="strength-wrap">
+            <div class="strength-bar" id="strengthBar"></div>
+          </div>
+          <div class="strength-label" id="strengthLabel"></div>
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <input type="password" id="confirmPassword" placeholder="Confirm your password" required />
+        </div>
+
+        <button type="submit" class="login-btn">Register</button>
+      </form>
+
+      <div class="helper-box">
+        Use at least 6 characters with a mix of uppercase, numbers, and symbols for a stronger password.
+      </div>
+
+      <div id="message" class="message"></div>
+
+      <div class="bottom-text">
+        Already have an account? <a href="Login.html">Login</a>
+      </div>
+    </div>
+  </div>
+  
+
+  <script>
+    const registerForm = document.getElementById("registerForm");
+    const message = document.getElementById("message");
+
+    function checkStrength(password) {
+      const bar = document.getElementById('strengthBar');
+      const label = document.getElementById('strengthLabel');
+
+      if (!password) {
+        bar.style.width = '0%';
+        label.textContent = '';
+        return;
+      }
+
+      let score = 0;
+      if (password.length >= 6) score++;
+      if (password.length >= 10) score++;
+      if (/[A-Z]/.test(password)) score++;
+      if (/[0-9]/.test(password)) score++;
+      if (/[^A-Za-z0-9]/.test(password)) score++;
+
+      const levels = [
+        { color: '#ef4444', text: 'Very weak', width: '20%' },
+        { color: '#f97316', text: 'Weak', width: '40%' },
+        { color: '#eab308', text: 'Fair', width: '60%' },
+        { color: '#22c55e', text: 'Strong', width: '80%' },
+        { color: '#16a34a', text: 'Very strong', width: '100%' },
+      ];
+
+      const level = levels[Math.min(score - 1, 4)];
+      bar.style.width = level.width;
+      bar.style.background = level.color;
+      label.textContent = level.text;
+      label.style.color = level.color;
+    }
+
+    registerForm.addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const fullName = document.getElementById("fullName").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const confirmPassword = document.getElementById("confirmPassword").value.trim();
+
+      if (!fullName || !email || !password || !confirmPassword) {
+        message.textContent = "Please fill in all fields.";
+        message.className = "message error";
+        return;
+      }
+
+      if (password.length < 6) {
+        message.textContent = "Password must be at least 6 characters.";
+        message.className = "message error";
+        return;
+      }
+
+      // Block very weak passwords
+      let score = 0;
+      if (password.length >= 6) score++;
+      if (password.length >= 10) score++;
+      if (/[A-Z]/.test(password)) score++;
+      if (/[0-9]/.test(password)) score++;
+      if (/[^A-Za-z0-9]/.test(password)) score++;
+
+      if (score < 2) {
+        message.textContent = "Password is too weak. Add numbers or uppercase letters.";
+        message.className = "message error";
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        message.textContent = "Passwords do not match.";
+        message.className = "message error";
+        return;
+      }
+
+      try {
+        const response = await fetch("http://localhost:3000/api/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fullName, email, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          message.textContent = "Registration successful! Redirecting...";
+          message.className = "message success";
+          setTimeout(() => { window.location.href = "Login.html"; }, 1500);
+        } else {
+          message.textContent = data.error || "Registration failed.";
+          message.className = "message error";
+        }
+      } catch (error) {
+        message.textContent = "Server error. Try again later.";
+        message.className = "message error";
+      }
+    });
+  </script>
+</body>
+
+</html>
