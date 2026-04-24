@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Learn more about JobTrack, a student-built job and internship application tracker." />
+  <title>JobTrack - About</title>
+  <link rel="stylesheet" href="Styles.css">
+</head>
+
+<body class="dark-mode">
+
+  <nav class="navbar">
+    <div class="navbar-left">
+      <a href="landingPage.html" class="navbar-logo">
+        <img src="JobTrackLogo.png" alt="JobTrack" style="height: 48px;" />
+      </a>
+    </div>
+
+    <div class="navbar-right">
+      <a href="landingPage.html" class="action-btn action-secondary">Home</a>
+      <a href="Login.html" class="action-btn action-secondary">Log in</a>
+      <a href="Registeration.html" class="action-btn action-primary">Sign up free</a>
+    </div>
+  </nav>
+
+  <section class="landing-hero">
+    <div class="hero-badge">CSC 5750 Group Project · Wayne State University</div>
+
+    <h1>About JobTrack</h1>
+
+    <p>
+      JobTrack is a simple web application built to help students, graduates, and job seekers organize
+      their job and internship applications without relying on messy spreadsheets.
+    </p>
+
+    <div class="hero-ctas">
+      <a href="Registeration.html" class="action-btn action-primary">Get started free</a>
+      <a href="landingPage.html" class="action-btn action-secondary">Back to home</a>
+    </div>
+  </section>
+
+  <div class="landing-section">
+    <p class="section-heading">Our purpose</p>
+    <h2 class="section-title">Making the job search easier to manage</h2>
+
+    <div class="features-grid">
+      <div class="feature-box">
+        <h3>🎯 Built for job seekers</h3>
+        <p>
+          JobTrack gives users one place to save applications, track statuses, and stay focused during
+          the job or internship search process.
+        </p>
+      </div>
+
+      <div class="feature-box">
+        <h3>📊 Clear organization</h3>
+        <p>
+          Instead of using scattered notes or spreadsheets, users can view their applications in a clean
+          dashboard with simple status labels.
+        </p>
+      </div>
+
+      <div class="feature-box">
+        <h3>📅 Better planning</h3>
+        <p>
+          The app helps users keep up with interviews, deadlines, and application progress so important
+          opportunities are easier to manage.
+        </p>
+      </div>
+
+      <div class="feature-box">
+        <h3>💡 Student-built project</h3>
+        <p>
+          JobTrack was created as a course project by students in CSC 5750 at Wayne State University.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="landing-section">
+    <p class="section-heading">The team</p>
+    <h2 class="section-title">Built by students at Wayne State University</h2>
+
+    <div class="features-grid">
+      <div class="feature-box">
+        <h3>Saba Begum</h3>
+        <p>Lead developer and project lead for the JobTrack group project.</p>
+      </div>
+
+      <div class="feature-box">
+        <h3>Rahul Dass Dass</h3>
+        <p>Contributed to the design, development, and completion of the JobTrack web app.</p>
+      </div>
+
+      <div class="feature-box">
+        <h3>Julian Amouri</h3>
+        <p>Contributed to the design, development, and completion of the JobTrack web app.</p>
+      </div>
+
+      <div class="feature-box">
+        <h3>Rawad Soueidan</h3>
+        <p>Contributed to the design, development, and completion of the JobTrack web app.</p>
+      </div>
+
+      <div class="feature-box">
+        <h3>Tazidul Chowdhury</h3>
+        <p>Contributed to the design, development, and completion of the JobTrack web app.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta-banner">
+    <div class="cta-inner">
+      <h2>Simple tracking for every application</h2>
+      <p>
+        JobTrack helps turn a stressful application process into a more organized and manageable workflow.
+      </p>
+      <a href="Registeration.html" class="action-btn action-primary">Create your free account</a>
+    </div>
+  </div>
+
+  <footer class="landing-footer">
+    &copy; 2025 JobTrack &nbsp;·&nbsp; CSC 5750 Group Project at Wayne State University.
+  </footer>
+
+  <script>
+    const savedTheme = localStorage.getItem('jt-theme') || 'dark';
+    document.body.classList.remove('dark-mode', 'light-mode');
+    document.body.classList.add(savedTheme === 'light' ? 'light-mode' : 'dark-mode');
+  </script>
+
+</body>
+
+</html>
