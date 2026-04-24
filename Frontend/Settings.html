@@ -104,6 +104,7 @@
         </div>
         <div class="btn-row">
           <button class="btn btn-primary" onclick="changePassword()">Update Password</button>
+          <span id="password-saved-msg" style="display:none; color:#4ade80; font-size:0.875rem; transition: opacity 0.3s;">✓ Password updated</span>
         </div>
       </div>
     </div>
@@ -164,6 +165,17 @@
             <span class="slider"></span>
           </label>
         </div>
+        <div class="toggle-row" id="email-timing-row" style="display:none;">
+          <div class="toggle-label">
+            <h4>Reminder Timing</h4>
+            <p>How far in advance to send the email</p>
+          </div>
+          <select id="pref-email-timing" onchange="savePreference('emailTiming', this.value)">
+            <option value="24">24 hours before</option>
+            <option value="48">48 hours before</option>
+            <option value="168">1 week before</option>
+          </select>
+        </div>
         <div class="toggle-row">
           <div class="toggle-label">
             <h4>Weekly Summary</h4>
@@ -171,17 +183,6 @@
           </div>
           <label class="toggle-switch">
             <input type="checkbox" id="pref-weekly" onchange="savePreference('weeklySummary', this.checked)" />
-            <span class="slider"></span>
-          </label>
-        </div>
-        <div class="toggle-row">
-          <div class="toggle-label">
-            <h4>Show Rejection Stats</h4>
-            <p>Display rejection count and rate on your dashboard</p>
-          </div>
-          <label class="toggle-switch">
-            <input type="checkbox" id="pref-rejections" checked
-              onchange="savePreference('showRejections', this.checked)" />
             <span class="slider"></span>
           </label>
         </div>
@@ -233,6 +234,7 @@
         </div>
         <div class="btn-row">
           <button class="btn btn-primary" onclick="saveGoals()">Save Goals</button>
+          <span id="goals-saved-msg" style="display:none; color:#4ade80; font-size:0.875rem; transition: opacity 0.3s;">✓ Goals saved</span>
         </div>
       </div>
     </div>
@@ -365,6 +367,13 @@
         document.getElementById('inputNewPassword').value = '';
         document.getElementById('inputConfirmPassword').value = '';
         showToast('Password updated ✓');
+        const msg = document.getElementById('password-saved-msg');
+        msg.style.display = 'inline';
+        msg.style.opacity = '1';
+        setTimeout(() => {
+          msg.style.opacity = '0';
+          setTimeout(() => msg.style.display = 'none', 300);
+        }, 3000);
       } catch (err) {
         showToast('Failed: ' + err.message);
       }
@@ -375,7 +384,8 @@
       document.getElementById('pref-notifications').checked = prefs.notifications ?? false;
       document.getElementById('pref-email').checked = prefs.emailReminders ?? false;
       document.getElementById('pref-weekly').checked = prefs.weeklySummary ?? false;
-      document.getElementById('pref-rejections').checked = prefs.showRejections ?? true;
+      document.getElementById('email-timing-row').style.display = prefs.emailReminders ? 'flex' : 'none';
+      document.getElementById('pref-email-timing').value = prefs.emailTiming || '24';
     }
 
     function savePreference(key, value) {
@@ -383,6 +393,35 @@
       prefs[key] = value;
       localStorage.setItem('jt-prefs', JSON.stringify(prefs));
       showToast('Preference saved ✓');
+
+      if (key === 'emailReminders') {
+        document.getElementById('email-timing-row').style.display = value ? 'flex' : 'none';
+      }
+
+      // Save email reminder prefs to backend so the scheduler can read them
+      if (key === 'emailReminders' || key === 'emailTiming') {
+        const latestPrefs = JSON.parse(localStorage.getItem('jt-prefs') || '{}');
+        fetch(`http://localhost:3000/api/users/${user.id}/email-prefs`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email_reminders: latestPrefs.emailReminders ?? false,
+            email_timing: parseInt(latestPrefs.emailTiming) || 24
+          })
+        }).catch(err => console.error('Failed to save email prefs:', err));
+      }
+
+      // Save weekly summary pref to backend
+      if (key === 'weeklySummary') {
+        fetch(`http://localhost:3000/api/users/${user.id}/email-prefs`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            weekly_summary: value
+          })
+        }).catch(err => console.error('Failed to save weekly summary pref:', err));
+      }
+
       if (key === 'notifications' && value) {
         Notification.requestPermission().then(perm => {
           if (perm !== 'granted') {
@@ -425,11 +464,28 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(body)
         });
-        if (res.ok) showToast('Goals saved!');
-        else showToast('Failed to save goals.');
+        if (res.ok) {
+          showToast('Goals saved!');
+          const msg = document.getElementById('goals-saved-msg');
+          msg.style.display = 'inline';
+          msg.style.opacity = '1';
+          setTimeout(() => {
+            msg.style.opacity = '0';
+            setTimeout(() => msg.style.display = 'none', 300);
+          }, 3000);
+        } else {
+          showToast('Failed to save goals.');
+        }
       } catch (err) {
         showToast('Failed to save goals.');
       }
+    }
+
+    function sendNotification(title, body) {
+      const prefs = JSON.parse(localStorage.getItem('jt-prefs') || '{}');
+      if (!prefs.notifications) return;
+      if (Notification.permission !== 'granted') return;
+      new Notification(title, { body, icon: '../JobTrackLogo.png' });
     }
 
     function confirmClearData() {
