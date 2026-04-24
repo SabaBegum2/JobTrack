@@ -382,6 +382,26 @@ app.get('/api/goals', async (req, res) => {
   }
 });
 
+app.put('/api/users/:id/email-prefs', async (req, res) => {
+  const { email_reminders, email_timing, weekly_summary } = req.body;
+  try {
+    const fields = [];
+    const values = [];
+
+    if (email_reminders !== undefined) { fields.push('email_reminders = ?'); values.push(email_reminders); }
+    if (email_timing !== undefined)    { fields.push('email_timing = ?');    values.push(email_timing); }
+    if (weekly_summary !== undefined)  { fields.push('weekly_summary = ?');  values.push(weekly_summary); }
+
+    if (fields.length === 0) return res.status(400).json({ message: 'No fields to update' });
+
+    values.push(req.params.id);
+    await db.query(`UPDATE users SET ${fields.join(', ')} WHERE id = ?`, values);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // SAVE goals (upsert — creates row if it doesn't exist, updates if it does)
 app.post('/api/goals', async (req, res) => {
   const { userId, weekly, title, industry, status } = req.body;
