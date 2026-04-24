@@ -32,7 +32,6 @@
       <div class="dropdown" id="avatarDropdown">
         <div class="dropdown-name" id="dropdownName">User</div>
         <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 8px 0;">
-        <a href="Settings.html" class="dropdown-item">Settings</a>
         <a href="#" class="dropdown-item" onclick="logout()">Logout</a>
       </div>
     </div>
@@ -249,8 +248,10 @@
     </div>
 
   </div>
-
   <div class="toast" id="toast"></div>
+  <footer class="site-footer">
+  <p>© 2025 JobTrack. Built to help you land your next role.</p>
+</footer>
 
   <script>
     const user = JSON.parse(localStorage.getItem('user'));
