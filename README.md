@@ -67,12 +67,56 @@ CREATE TABLE users (
   email VARCHAR(255) NOT NULL UNIQUE,
   password VARCHAR(255) NOT NULL
 );
+USE JobTracker;
+ALTER TABLE users 
+ADD COLUMN reset_token VARCHAR(255) NULL,
+ADD COLUMN reset_expiry DATETIME NULL;
 
 CREATE TABLE password_resets (
   id INT AUTO_INCREMENT PRIMARY KEY,
   email VARCHAR(255) NOT NULL,
   token VARCHAR(255) NOT NULL,
   expires_at TIMESTAMP NOT NULL
+);
+
+CREATE TABLE jobs (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  company VARCHAR(255),
+  title VARCHAR(255),
+  status ENUM('Interested', 'Applied', 'Interviewing', 'Offer', 'Rejected'),
+  date DATE,
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE calendar_events (
+  id          INT AUTO_INCREMENT PRIMARY KEY,
+  user_id     INT NOT NULL,
+  title       VARCHAR(255) NOT NULL,
+  date        DATE NOT NULL,
+  time        TIME DEFAULT NULL,
+  type        ENUM('interview', 'deadline', 'followup', 'offer', 'other') NOT NULL DEFAULT 'other',
+  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  INDEX idx_user_date (user_id, date)
+);
+
+CREATE TABLE user_settings (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL UNIQUE,
+  theme ENUM('light', 'dark') DEFAULT 'light',
+  email_reminders BOOLEAN DEFAULT FALSE,
+  weekly_summary BOOLEAN DEFAULT FALSE,
+  job_search_goal INT DEFAULT NULL,
+  preferred_job_type ENUM('full-time', 'part-time', 'contract', 'internship', 'remote') DEFAULT NULL,
+  preferred_location VARCHAR(255) DEFAULT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 ```
 
