@@ -17,9 +17,10 @@ module.exports = (db) => {
     console.log('Email scheduler loaded ✓');
 
     // ============================================================
-    // CALENDAR EVENT REMINDERS — runs every minute (change to '0 * * * *' for every hour in production)
+    // CALENDAR EVENT REMINDERS — runs every minute
+    // Change to '0 * * * *' for every hour in production
     // ============================================================
-    cron.schedule('* * * * *', async () => {
+    cron.schedule('0 15 * * 5', async () => {  // runs every Friday at 3:00 PM
         console.log('Running calendar reminder job...');
         try {
             const [users] = await db.query(
@@ -29,7 +30,6 @@ module.exports = (db) => {
             for (const user of users) {
                 const hours = user.email_timing || 24;
 
-                // Only fetch events where reminder hasn't been sent yet
                 const [events] = await db.query(`
                     SELECT * FROM calendar_events
                     WHERE user_id = ?
@@ -65,12 +65,12 @@ module.exports = (db) => {
                                     <p style="margin-top: 24px; color: #64748b; font-size: 13px;">
                                         You're receiving this because you have email reminders enabled in JobTrack.
                                     </p>
+                                    <div style="height: 32px;"></div>
                                 </div>
                             </div>
                         `
                     });
 
-                    // Mark reminder as sent so it doesn't send again
                     await db.query(
                         'UPDATE calendar_events SET reminder_sent = true WHERE id = ?',
                         [event.id]
@@ -85,9 +85,11 @@ module.exports = (db) => {
     });
 
     // ============================================================
-    // WEEKLY SUMMARY — runs every Friday at 3:00 PM
+    // WEEKLY SUMMARY — change between schedules:
+    // Testing (every minute):  '* * * * *'
+    // Production (Fri 3pm):    '0 15 * * 5'
     // ============================================================
-    cron.schedule('0 15 * * 5', async () => {
+    cron.schedule('0 15 * * 5', async () => {  // ← change to '0 15 * * 5' for production
         console.log('Running weekly summary job...');
         try {
             const [users] = await db.query('SELECT * FROM users WHERE weekly_summary = true');
@@ -133,7 +135,7 @@ module.exports = (db) => {
                     ? interviews.map(ev => `
                         <tr>
                             <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${ev.title}</td>
-                            <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${ev.date}</td>
+                            <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${new Date(ev.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
                             <td style="padding: 8px 12px; border-bottom: 1px solid #e2e8f0;">${ev.time || 'All day'}</td>
                         </tr>`).join('')
                     : `<tr><td colspan="3" style="padding: 8px 12px; color: #94a3b8;">No upcoming interviews</td></tr>`;
@@ -159,7 +161,7 @@ module.exports = (db) => {
                 await transporter.sendMail({
                     from: 'sababegum4432@gmail.com',
                     to: user.email,
-                    subject: 'JobTrack — Your Weekly Summary 📊',
+                    subject: 'JobTrack - Your Weekly Summary 📊',
                     html: `
                         <div style="font-family: sans-serif; max-width: 560px; margin: 0 auto; color: #1e293b;">
                             <div style="background: linear-gradient(135deg, #0c3e54, #174e69); padding: 28px 32px; border-radius: 12px 12px 0 0;">
@@ -170,19 +172,19 @@ module.exports = (db) => {
                             </div>
                             <div style="background: #f8fafc; padding: 24px 32px; border: 1px solid #e2e8f0;">
                                 <h2 style="color: #0c3e54; font-size: 16px; margin: 0 0 16px;">📈 All-Time Stats</h2>
-                                <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px;">
-                                    ${[
-                                        ['Total', stats.total, '#2d5be3'],
-                                        ['Applied', stats.applied, '#2d5be3'],
-                                        ['Interviewing', stats.interviewing, '#f59e0b'],
-                                        ['Offers', stats.offers, '#18794e'],
-                                        ['Rejected', stats.rejected, '#c53030'],
-                                    ].map(([label, val, color]) => `
-                                        <div style="background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 16px; min-width: 80px; text-align: center;">
-                                            <div style="font-size: 22px; font-weight: 700; color: ${color};">${val}</div>
-                                            <div style="font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">${label}</div>
-                                        </div>`).join('')}
-                                </div>
+                                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 24px;">
+    ${[
+        ['Total', stats.total, '#2d5be3'],
+        ['Applied', stats.applied, '#2d5be3'],
+        ['Interviewing', stats.interviewing, '#f59e0b'],
+        ['Offers', stats.offers, '#18794e'],
+        ['Rejected', stats.rejected, '#c53030'],
+    ].map(([label, val, color]) => `
+        <div style="background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 8px; text-align: center;">
+            <div style="font-size: 20px; font-weight: 700; color: ${color};">${val}</div>
+            <div style="font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">${label}</div>
+        </div>`).join('')}
+</div>
 
                                 <h2 style="color: #0c3e54; font-size: 16px; margin: 0 0 12px;">📋 Applications This Week (${weekApps.length})</h2>
                                 <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px; background: white; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0;">
@@ -221,6 +223,7 @@ module.exports = (db) => {
                                 <p style="margin-top: 24px; color: #94a3b8; font-size: 12px;">
                                     You're receiving this because you have weekly summaries enabled in JobTrack.
                                 </p>
+                                <div style="height: 32px;"></div>
                             </div>
                         </div>
                     `
