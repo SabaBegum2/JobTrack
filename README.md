@@ -1,5 +1,12 @@
 # JobTrack
-JobTrack is a cloud-hosted web application that helps users organize, track, and manage job and internship applications in one place. Users can securely create an account, add job applications, update application statuses, and view/edit/delete their saved records from any device.
+JobTrack is a cloud-hosted web application that helps users organize, track, 
+and manage job and internship applications in one place. Users can securely 
+create an account, add job applications, update application statuses, and 
+view a dashboard with application analytics, a calendar for scheduling, 
+and email reminders.
+
+## Live Site
+http://jobtrack-frontend.s3-website.us-east-2.amazonaws.com
 
 ---
 
@@ -24,9 +31,9 @@ JobTrack uses a **three-tier architecture**:
 ---
 
 ## Tech Stack
-- Frontend: HTML, CSS, JavaScript  
-- Backend: Node.js (Express.js REST API)  
-- Database: AWS RDS (MySQL)  
+- Frontend: HTML, CSS, JavaScript (hosted on AWS S3)
+- Backend: Node.js (Express.js REST API) (hosted on AWS EC2)
+- Database: MySQL (hosted on Amazon RDS 
 - Deployment and Hosting: AWS EC2  
 - Version Control: Git / GitHub  
 
