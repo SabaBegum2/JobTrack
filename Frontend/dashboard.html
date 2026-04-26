@@ -318,7 +318,7 @@
     async function loadUpcomingInterviews() {
       const container = document.getElementById('upcomingInterviews');
       try {
-        const res = await fetch(`http://localhost:3000/api/calendar/events?user_id=${user.id}`);
+        const res = await fetch(` http://18.216.228.113:3000/api/calendar/events?user_id=${user.id}`);
         const events = await res.json();
         const today = new Date().toISOString().split('T')[0];
         const interviews = events
@@ -361,7 +361,7 @@
     // ---- GOALS ----
     async function loadGoals() {
       try {
-        const res = await fetch(`http://localhost:3000/api/goals?userId=${user.id}`);
+        const res = await fetch(` http://18.216.228.113:3000/api/goals?userId=${user.id}`);
         const goals = await res.json();
         if (!goals || !goals.goal_weekly) return;
 
@@ -394,7 +394,7 @@
     // ---- MAIN DASHBOARD DATA ----
     async function loadDashboard() {
       try {
-        const res = await fetch(`http://localhost:3000/api/dashboard?userId=${user.id}`);
+        const res = await fetch(` http://18.216.228.113:3000/api/dashboard?userId=${user.id}`);
         const data = await res.json();
         const s = data.stats;
         //const p = data.progress;
@@ -514,7 +514,7 @@
         return;
       }
       try {
-        const res = await fetch('http://localhost:3000/api/jobs', {
+        const res = await fetch(' http://18.216.228.113:3000/api/jobs', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ userId: user.id, company, title, date, status, notes: '' })

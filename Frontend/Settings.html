@@ -315,7 +315,7 @@
       const email = document.getElementById('inputEmail').value.trim();
       if (!fullName || !email) { showToast('Name and email are required.'); return; }
       try {
-        const res = await fetch(`http://localhost:3000/api/users/${user.id}`, {
+        const res = await fetch(` http://18.216.228.113:3000/api/users/${user.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ full_name: fullName, email })
@@ -349,7 +349,7 @@
       if (newPwd !== confirm) { showToast('New passwords do not match.'); return; }
       if (newPwd.length < 6) { showToast('Password must be at least 6 characters.'); return; }
       try {
-        const res = await fetch(`http://localhost:3000/api/users/${user.id}/password`, {
+        const res = await fetch(` http://18.216.228.113:3000/api/users/${user.id}/password`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ current_password: current, new_password: newPwd })
@@ -394,7 +394,7 @@
       // Save email reminder prefs to backend so the scheduler can read them
       if (key === 'emailReminders' || key === 'emailTiming') {
         const latestPrefs = JSON.parse(localStorage.getItem('jt-prefs') || '{}');
-        fetch(`http://localhost:3000/api/users/${user.id}/email-prefs`, {
+        fetch(` http://18.216.228.113:3000/api/users/${user.id}/email-prefs`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -406,7 +406,7 @@
 
       // Save weekly summary pref to backend
       if (key === 'weeklySummary') {
-        fetch(`http://localhost:3000/api/users/${user.id}/email-prefs`, {
+        fetch(` http://18.216.228.113:3000/api/users/${user.id}/email-prefs`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -430,7 +430,7 @@
     async function loadGoals() {
       const user = JSON.parse(localStorage.getItem('user'));
       try {
-        const res = await fetch(`http://localhost:3000/api/goals?userId=${user.id}`);
+        const res = await fetch(` http://18.216.228.113:3000/api/goals?userId=${user.id}`);
         const goals = await res.json();
         if (!goals || !goals.goal_weekly) return;
         document.getElementById('goal-weekly').value = goals.goal_weekly || '';
@@ -452,7 +452,7 @@
         status: document.getElementById('goal-status').value,
       };
       try {
-        const res = await fetch('http://localhost:3000/api/goals', {
+        const res = await fetch(' http://18.216.228.113:3000/api/goals', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(body)
@@ -484,7 +484,7 @@
     function confirmClearData() {
       if (!confirm('This will permanently delete ALL your job applications. Are you sure?')) return;
       if (!confirm('This cannot be undone. Confirm again to proceed.')) return;
-      fetch(`http://localhost:3000/api/jobs/all/${user.id}`, { method: 'DELETE' })
+      fetch(` http://18.216.228.113:3000/api/jobs/all/${user.id}`, { method: 'DELETE' })
         .then(res => { if (!res.ok) throw new Error(); showToast('All applications cleared.'); })
         .catch(() => showToast('Failed to clear data.'));
     }
@@ -492,7 +492,7 @@
     function confirmDeleteAccount() {
       const input = prompt('Type DELETE to permanently delete your account:');
       if (input !== 'DELETE') { showToast('Account deletion cancelled.'); return; }
-      fetch(`http://localhost:3000/api/users/${user.id}`, { method: 'DELETE' })
+      fetch(` http://18.216.228.113:3000/api/users/${user.id}`, { method: 'DELETE' })
         .then(res => {
           if (!res.ok) throw new Error();
           localStorage.removeItem('user');
